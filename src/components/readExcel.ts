@@ -1,14 +1,9 @@
 import * as XLSX from "xlsx";
-import moment from "moment";
 import { useReports } from "./useReports";
 import { useTotals } from "./useTotals";
 import { useCorrect } from "./useCorrect";
 
-export const readExcel = async (
-  file: any,
-  inverterSerialNumber: string,
-  responsabil: string
-) => {
+export const readExcel = async (file: any) => {
   return new Promise((res, rej) => {
     const reader = new FileReader();
 
@@ -28,26 +23,26 @@ export const readExcel = async (
         dense: true,
       }).Sheets[sheetNames[1]];
 
-      const parsedTotalSheet = totalSheet.map((row: any) =>
-        row.map((cell: any) => cell?.v)
-      );
-      const parsedReportSheet = reportSheet.map((row: any) =>
+      const parsedTotalSheet = totalSheet?.map((row: any) =>
         row.map((cell: any) => cell?.v)
       );
 
-      parsedReportSheet.splice(0, 1);
-      parsedTotalSheet.splice(0, 1);
+      const parsedReportSheet = reportSheet?.map((row: any) =>
+        row.map((cell: any) => cell?.v)
+      );
+
+      parsedReportSheet?.splice(0, 1);
+      parsedTotalSheet?.splice(0, 1);
 
       const reports = useReports(parsedReportSheet);
       const totals = useTotals(parsedTotalSheet);
 
-      const corrected = useCorrect(reports, totals);
-      // console.log(corrected);
-      // res(jsonArray);
+      const corrected = useCorrect(reports as any[], totals as any[]);
+      res({ reportSheet: reportSheet, correctedTotals: corrected });
     };
 
     reader.onerror = (error) => {
-      // rej(error);
+      rej(error);
     };
 
     reader.readAsArrayBuffer(file);
