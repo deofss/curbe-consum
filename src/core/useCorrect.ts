@@ -14,7 +14,8 @@ export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
         "",
         "Was:",
         "Should be:",
-        "",
+        "Corrected:",
+        "Found corrispondent:",
         "Time:",
         timestampValues.flat(),
       ];
@@ -39,9 +40,20 @@ export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
       itemRes.codPa,
       totalSheetTotal,
       reportaArrayTotal,
-      totalSheetTotal === reportaArrayTotal ? "Correct" : "Needed Correction",
+      totalSheetTotal === reportaArrayTotal ||
+      !reportsArray.find(
+        (item) => item.loc_de_consum === itemRes.codLC && item.isTotal
+      )
+        ? false
+        : true,
+      !!reportsArray.find(
+        (item) => item.loc_de_consum === itemRes.codLC && item.isTotal
+      ),
       itemRes.um,
-      totalSheetTotal === reportaArrayTotal
+      totalSheetTotal === reportaArrayTotal ||
+      !reportsArray.find(
+        (item) => item.loc_de_consum === itemRes.codLC && item.isTotal
+      )
         ? [...itemRes.values].slice(0, -1)
         : correctionAlgorithm(
             [...itemRes.values].slice(0, -1),

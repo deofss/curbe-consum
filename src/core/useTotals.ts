@@ -19,6 +19,5 @@ export const useTotals = (inputArray: any[]) => {
     }))
     .filter((item) => !!item.codLC);
 
-  console.log(resultsArray);
   return resultsArray;
 };

@@ -11,6 +11,7 @@ export const readExcel = async (file: any) => {
       if (!e.target.result) return;
       const data = e.target.result;
       const sheetNames = XLSX.readFile(data).SheetNames;
+
       const reportSheet = XLSX.read(data, {
         type: "binary",
         WTF: true,
@@ -38,7 +39,11 @@ export const readExcel = async (file: any) => {
       const totals = useTotals(parsedTotalSheet);
 
       const corrected = useCorrect(reports as any[], totals as any[]);
-      res({ reportSheet: reportSheet, correctedTotals: corrected });
+      res({
+        reportSheet: reportSheet,
+        correctedTotals: corrected,
+        fileName: file.name.split(".")[0],
+      });
     };
 
     reader.onerror = (error) => {

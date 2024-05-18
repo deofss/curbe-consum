@@ -39,8 +39,6 @@ const positiveCorrect = (array: number[], value: number) => {
     }
   }
 
-  console.log(arr.length);
-
   // console.log(`Old sum: ${array.reduce((acc, curr) => acc + curr, 0)}`);
   // console.log(`New sum: ${arr.reduce((acc, curr) => acc + curr, 0)}`);
   // console.log(
@@ -68,7 +66,6 @@ const negativeCorrect = (array: number[], value: number) => {
     }
   }
 
-  console.log(arr.length);
   // console.log(`Old sum: ${array.reduce((acc, curr) => acc + curr, 0)}`);
   // console.log(`New sum: ${arr.reduce((acc, curr) => acc + curr, 0)}`);
   // console.log(
