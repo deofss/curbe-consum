@@ -1,8 +1,24 @@
-import { correctionAlgorithm } from './correctionAlgorithm';
+import { correctionAlgorithm } from "./correctionAlgorithm";
 
 export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
-  const resultsArray = totalsArray.map((itemRes) => {
+  if (!reportsArray) return;
+  if (!totalsArray) return;
+  const resultsArray = totalsArray.map((itemRes, index) => {
     if (!itemRes.codLC) return;
+
+    if (index === 0) {
+      let timestampValues = itemRes.values.slice(0, -1);
+      return [
+        "",
+        "",
+        "",
+        "Was:",
+        "Should be:",
+        "",
+        "Time:",
+        timestampValues.flat(),
+      ];
+    }
     const valuesArray = itemRes.values;
     const totalSheetTotal = valuesArray
       .slice(0, -1)
@@ -23,7 +39,7 @@ export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
       itemRes.codPa,
       totalSheetTotal,
       reportaArrayTotal,
-      totalSheetTotal === reportaArrayTotal ? 'Correct' : 'Needed Correction',
+      totalSheetTotal === reportaArrayTotal ? "Correct" : "Needed Correction",
       itemRes.um,
       totalSheetTotal === reportaArrayTotal
         ? [...itemRes.values].slice(0, -1)
@@ -34,5 +50,6 @@ export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
           ),
     ];
   });
+
   return resultsArray;
 };

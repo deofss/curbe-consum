@@ -1,6 +1,7 @@
 export const useReports = (inputArray: any[]) => {
+  if (!inputArray) return;
   return inputArray.map((row: any) => ({
-    isTotal: row[0] === '*' ? true : false,
+    isTotal: row[0] === "*" ? true : false,
     distribuitor: row[1],
     furnizor: row[2],
     client_final: row[3],
