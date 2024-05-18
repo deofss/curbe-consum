@@ -4,39 +4,74 @@ export const correctionAlgorithm = (
   codLC: any
 ) => {
   if (Number(valueToCorrect) > 0) {
-    let positiveValuesCount = 0;
-
-    valuesArray.map((item) =>
-      Number(item > 0) ? positiveValuesCount++ : null
+    console.log(`${codLC}:Needs possitive correction for ${valueToCorrect}`);
+    const newValuesArray = positiveCorrect(
+      valuesArray.reverse(),
+      valueToCorrect
     );
 
-    let remainingValueToBeAllocated = valueToCorrect;
-    const func = (value: number) => {
-      remainingValueToBeAllocated--;
-      // console.log(remainingValueToBeAllocated, value, value + 1, codLC);
-
-      return value + 1;
-    };
-    const newArray = valuesArray
-      .reverse()
-      .map((item) => (remainingValueToBeAllocated > 0 ? func(item) : item));
-    return newArray.reverse();
+    return newValuesArray.reverse();
   } else if (Number(valueToCorrect) < 0) {
-    let remainingValueToBeAllocated = valueToCorrect;
+    console.log(`${codLC}:Needs negative correction for ${valueToCorrect}`);
+    let newValuesArray = negativeCorrect(valuesArray.reverse(), valueToCorrect);
 
-    const func = (value: number) => {
-      remainingValueToBeAllocated--;
-      console.log(remainingValueToBeAllocated, value, value - 1, codLC);
-
-      return value - 1;
-    };
-    const newArray = valuesArray
-      .reverse()
-      .map((item) =>
-        item > 1 && remainingValueToBeAllocated > 0 ? func(item) : item
-      );
-    return newArray.reverse();
+    // return newValuesArray.reverse();
   } else {
-    return valuesArray;
+    console.log(`Something bad happened for ${codLC}`);
+  }
+};
+
+const positiveCorrect = (array: number[], value: number) => {
+  let arr = array.map((item) => item);
+  let remaining = value;
+
+  let idx = 0;
+
+  for (let i = 0; i < arr.length; i++) {
+    i = idx;
+    if (remaining > 0) {
+      arr[i] += 1;
+      remaining--;
+      console.log(`Added: 1 to ${arr[i]}, remaining to be added ${remaining}`);
+    }
+
+    idx++;
+  }
+
+  console.log(`Old sum: ${array.reduce((acc, curr) => acc + curr, 0)}`);
+  console.log(`New sum: ${arr.reduce((acc, curr) => acc + curr, 0)}`);
+
+  return arr;
+};
+
+const negativeCorrect = (array: number[], value: number) => {
+  let arr = array.map((item) => item);
+  let remaining = -value;
+
+  let idx = 0;
+  for (let i = 0; i < arr.length; i++) {
+    i = idx;
+    if (remaining > 0 && arr[i] > 0) {
+      arr[i] -= 1;
+      remaining--;
+      console.log(
+        `Subtracted: 1 from ${
+          arr[i] + 1
+        }, remaining to be subtracted ${remaining}`
+      );
+    }
+
+    if (remaining === 0) {
+      console.log(`Old sum: ${array.reduce((acc, curr) => acc + curr, 0)}`);
+      console.log(`New sum: ${arr.reduce((acc, curr) => acc + curr, 0)}`);
+      return arr;
+    }
+
+    if (i === arr.length - 2) {
+      idx = 0;
+    }
+    {
+      idx++;
+    }
   }
 };

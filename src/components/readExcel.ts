@@ -1,8 +1,8 @@
-import * as XLSX from 'xlsx';
-import moment from 'moment';
-import { useReports } from './useReports';
-import { useTotals } from './useTotals';
-import { useCorrect } from './useCorrect';
+import * as XLSX from "xlsx";
+import moment from "moment";
+import { useReports } from "./useReports";
+import { useTotals } from "./useTotals";
+import { useCorrect } from "./useCorrect";
 
 export const readExcel = async (
   file: any,
@@ -17,13 +17,13 @@ export const readExcel = async (
       const data = e.target.result;
       const sheetNames = XLSX.readFile(data).SheetNames;
       const reportSheet = XLSX.read(data, {
-        type: 'binary',
+        type: "binary",
         WTF: true,
         dense: true,
       }).Sheets[sheetNames[0]];
 
       const totalSheet = XLSX.read(data, {
-        type: 'binary',
+        type: "binary",
         WTF: true,
         dense: true,
       }).Sheets[sheetNames[1]];
@@ -42,7 +42,7 @@ export const readExcel = async (
       const totals = useTotals(parsedTotalSheet);
 
       const corrected = useCorrect(reports, totals);
-      console.log(corrected);
+      // console.log(corrected);
       // res(jsonArray);
     };
 
