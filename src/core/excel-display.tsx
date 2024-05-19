@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DirectoryInput from "./directory-input";
 import { readExcel } from "./readExcel";
 import {
@@ -12,6 +12,8 @@ import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CircleCheck, CircleX } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 import {
   Table,
@@ -30,6 +32,13 @@ const ExcelDisplay = ({}: {}) => {
   const [totalFileCount, setTotalFileCount] = useState(0);
   const [reportData, setReportData] = useState<any>([]);
   const [totalsData, setTotalsData] = useState<any>([]);
+  const [showDetails, setShowDetails] = useState<any[]>([]);
+
+  useEffect(() => {
+    setShowDetails((_) =>
+      Array.from({ length: totalFileCount }, (i) => (i = false))
+    );
+  }, [totalFileCount]);
 
   const handleDirectorySelect = async (filesArray: any) => {
     setIsLoading(true);
@@ -99,6 +108,8 @@ const ExcelDisplay = ({}: {}) => {
     });
   };
 
+  console.log(showDetails);
+
   return (
     <div className="w-full h-full mt-[70px]  flex flex-col items-center ">
       <Card className="w-full max-w-[1000px] mx-10 h-fit">
@@ -144,115 +155,137 @@ const ExcelDisplay = ({}: {}) => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {totalsData?.map((item: any, index: number) => (
-              <Card key={`${index}${item.fileName}`} className="mt-4">
-                <CardHeader>
-                  <CardTitle>{`Extras din fisier: ${item.fileName}`}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table className="max-h-[250px]">
-                    <TableHeader className="h-fit ">
-                      <TableRow>
-                        <TableHead className="text-xs">COD LC</TableHead>
-                        <TableHead className="text-xs">Denumire</TableHead>
-                        <TableHead className="text-xs">Gasit corr.</TableHead>
-                        <TableHead className="text-xs">Val. MDM</TableHead>
-                        <TableHead className="text-xs">
-                          {`Val. Converge`}
-                        </TableHead>
-
-                        <TableHead className="text-xs">Diferenta</TableHead>
-                        <TableHead className="text-xs">Corectat</TableHead>
-                        <TableHead className="text-xs">Actual</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {item?.data
-                        .filter((_: any, rowIndex: number) => rowIndex !== 0)
-                        .map((cell: any, cellIndex: number) => {
-                          if (cell[3] === cell[4]) {
-                            return;
+            {totalsData?.map((item: any, index: number) => {
+              return (
+                <Card key={`${index}${item.fileName}`} className="mt-4">
+                  <CardHeader>
+                    <CardTitle>{`Extras din fisier: ${item.fileName}`}</CardTitle>
+                    <CardDescription>
+                      <div className="flex mt-4 items-center space-x-2">
+                        <Switch
+                          checked={showDetails[index]!}
+                          onCheckedChange={() =>
+                            setShowDetails((prev) =>
+                              prev?.map((item, idx) =>
+                                idx === index ? !item : item
+                              )
+                            )
                           }
+                          id={`${index}${item.fileName}`}
+                        />
+                        <Label htmlFor={`${index}${item.fileName}`}>
+                          Afiseaza tot
+                        </Label>
+                      </div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Table className="max-h-[250px]">
+                      <TableHeader className="h-fit ">
+                        <TableRow>
+                          <TableHead className="text-xs">COD LC</TableHead>
+                          <TableHead className="text-xs">Denumire</TableHead>
+                          <TableHead className="text-xs">Gasit corr.</TableHead>
+                          <TableHead className="text-xs">Val. MDM</TableHead>
+                          <TableHead className="text-xs">
+                            {`Val. Converge`}
+                          </TableHead>
 
-                          const actual = cell[8]?.reduce(
-                            (acc: number, curr: number) => acc + curr,
-                            0
-                          );
-                          return (
-                            <TableRow key={`${cell[0]}${cellIndex}`}>
-                              <TableCell className="text-xs">
-                                {cell[1]}
-                              </TableCell>
-                              <TableCell className="text-xs">
-                                {cell[0]}
-                              </TableCell>
-                              <TableCell className="text-xs  ">
-                                <Badge
-                                  className={clsx(
-                                    "bg-transparent pointer-events-none"
-                                  )}
-                                >
-                                  {cell[6] ? (
+                          <TableHead className="text-xs">Diferenta</TableHead>
+                          <TableHead className="text-xs">Corectat</TableHead>
+                          <TableHead className="text-xs">Actual</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {item?.data
+                          .filter((_: any, rowIndex: number) => rowIndex !== 0)
+                          .map((cell: any, cellIndex: number) => {
+                            const actual = cell[8]?.reduce(
+                              (acc: number, curr: number) => acc + curr,
+                              0
+                            );
+                            return (
+                              <TableRow
+                                className={clsx({
+                                  "hidden pointer-events-none":
+                                    !showDetails[index] && cell[3] === cell[4],
+                                })}
+                                key={`${cell[0]}${cellIndex}`}
+                              >
+                                <TableCell className="text-xs">
+                                  {cell[1]}
+                                </TableCell>
+                                <TableCell className="text-xs">
+                                  {cell[0]}
+                                </TableCell>
+                                <TableCell className="text-xs  ">
+                                  <Badge
+                                    className={clsx(
+                                      "bg-transparent pointer-events-none"
+                                    )}
+                                  >
+                                    {cell[6] ? (
+                                      <CircleCheck
+                                        size={20}
+                                        className="fill-green-200 stroke-1 stroke-green-800"
+                                      />
+                                    ) : (
+                                      <CircleX
+                                        size={20}
+                                        className="fill-red-300 stroke-1 stroke-red-800"
+                                      />
+                                    )}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-xs ">
+                                  {`${cell[3]} kWh`}
+                                </TableCell>
+                                <TableCell className="text-xs">
+                                  {cell[6] ? `${cell[4]} kWh` : "-"}
+                                </TableCell>
+                                <TableCell className="text-xs">
+                                  {cell[6] && cell[5]
+                                    ? `${cell[4] - cell[3]} kWh`
+                                    : "-"}
+                                </TableCell>
+                                <TableCell className="text-xs">
+                                  {cell[6] && cell[5] ? (
                                     <CircleCheck
                                       size={20}
                                       className="fill-green-200 stroke-1 stroke-green-800"
                                     />
-                                  ) : (
+                                  ) : null}
+
+                                  {!cell[6] && !cell[5] ? (
                                     <CircleX
                                       size={20}
                                       className="fill-red-300 stroke-1 stroke-red-800"
                                     />
-                                  )}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-xs ">
-                                {`${cell[3]} kWh`}
-                              </TableCell>
-                              <TableCell className="text-xs">
-                                {cell[6] ? `${cell[4]} kWh` : "-"}
-                              </TableCell>
-                              <TableCell className="text-xs">
-                                {cell[6] && cell[5]
-                                  ? `${cell[4] - cell[3]} kWh`
-                                  : "-"}
-                              </TableCell>
-                              <TableCell className="text-xs">
-                                {cell[6] && cell[5] ? (
-                                  <CircleCheck
-                                    size={20}
-                                    className="fill-green-200 stroke-1 stroke-green-800"
-                                  />
-                                ) : null}
-
-                                {!cell[6] && !cell[5] ? (
-                                  <CircleX
-                                    size={20}
-                                    className="fill-red-300 stroke-1 stroke-red-800"
-                                  />
-                                ) : null}
-                              </TableCell>
-                              <TableCell className="flex flex-row items-center justify-between">
-                                <Badge
-                                  className={clsx(
-                                    {
-                                      "bg-red-300 text-red-800 text-xs w-full pointer-events-none":
-                                        actual - cell[4] !== 0,
-                                    },
-                                    {
-                                      "bg-green-300 text-green-800 text-xs  w-full pointer-events-none":
-                                        actual - cell[4] === 0,
-                                    }
-                                  )}
-                                >{`${actual} kWh`}</Badge>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            ))}
+                                  ) : null}
+                                </TableCell>
+                                <TableCell className="flex flex-row items-center justify-between">
+                                  <Badge
+                                    className={clsx(
+                                      {
+                                        "bg-red-300 text-red-800 text-xs w-full pointer-events-none":
+                                          actual - cell[4] !== 0,
+                                      },
+                                      {
+                                        "bg-green-300 text-green-800 text-xs  w-full pointer-events-none":
+                                          actual - cell[4] === 0,
+                                      }
+                                    )}
+                                  >{`${actual} kWh`}</Badge>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </CardContent>
         </Card>
       ) : null}

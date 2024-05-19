@@ -1,5 +1,4 @@
 import "./App.css";
-import { useState } from "react";
 
 import { Helmet } from "react-helmet";
 
@@ -11,9 +10,6 @@ function App() {
         <title>DEO</title>
       </Helmet>
       <div className="w-full  p-md flex justify-center">
-        {/* <button disabled={isLoading} onClick={handleDownload}>
-          {isLoading ? "Loading" : "Download"}
-        </button> */}
         <ExcelDisplay />
       </div>
     </>
