@@ -26,33 +26,33 @@ export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
       .reduce((acc: any, curr: any) => acc + curr, 0);
 
     const reportaArrayTotal = reportsArray
-      .filter((item) => item.loc_de_consum === itemRes.codLC && item.isTotal)
+      .filter((item) => item?.loc_de_consum === itemRes?.codLC && item?.isTotal)
       .reduce(
-        (acc: any, curr: any) => acc + curr.total_cantitate_energie_activa,
+        (acc: any, curr: any) => acc + curr?.total_cantitate_energie_activa,
         0
       );
 
     const valueToBeCorrected = reportaArrayTotal - totalSheetTotal;
 
     return [
-      itemRes.denumireCompanie,
-      itemRes.codLC,
-      itemRes.codPa,
+      itemRes?.denumireCompanie,
+      itemRes?.codLC,
+      itemRes?.codPa,
       totalSheetTotal,
       reportaArrayTotal,
       totalSheetTotal === reportaArrayTotal ||
       !reportsArray.find(
-        (item) => item.loc_de_consum === itemRes.codLC && item.isTotal
+        (item) => item?.loc_de_consum === itemRes?.codLC && item?.isTotal
       )
         ? false
         : true,
       !!reportsArray.find(
-        (item) => item.loc_de_consum === itemRes.codLC && item.isTotal
+        (item) => item?.loc_de_consum === itemRes?.codLC && item?.isTotal
       ),
-      itemRes.um,
+      itemRes?.um,
       totalSheetTotal === reportaArrayTotal ||
       !reportsArray.find(
-        (item) => item.loc_de_consum === itemRes.codLC && item.isTotal
+        (item) => item?.loc_de_consum === itemRes?.codLC && item?.isTotal
       )
         ? [...itemRes.values].slice(0, -1)
         : correctionAlgorithm(

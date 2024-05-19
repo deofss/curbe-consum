@@ -11,6 +11,7 @@ import {
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { CircleCheck, CircleX } from "lucide-react";
 
 import {
   Table,
@@ -70,6 +71,7 @@ const ExcelDisplay = ({}: {}) => {
     for (let total of totalsData) {
       const totalDataFields = total.data;
       const fileName = total.fileName;
+      let shortFileName = fileName.split(".")[0].substring(0, 20);
 
       const totalsSheetData = totalDataFields.map((item: any) =>
         item ? item.flat() : item
@@ -88,7 +90,7 @@ const ExcelDisplay = ({}: {}) => {
       XLSX.utils.book_append_sheet(
         workbook,
         totalsSheet,
-        `${index}. ${fileName.substring(0, 20)}`
+        `${index}. ${shortFileName}`
       );
       index++;
     }
@@ -166,7 +168,7 @@ const ExcelDisplay = ({}: {}) => {
                     </TableHeader>
                     <TableBody>
                       {item?.data
-                        .filter((row: any, rowIndex: number) => rowIndex !== 0)
+                        .filter((_: any, rowIndex: number) => rowIndex !== 0)
                         .map((cell: any, cellIndex: number) => {
                           if (cell[3] === cell[4]) {
                             return;
@@ -187,17 +189,20 @@ const ExcelDisplay = ({}: {}) => {
                               <TableCell className="text-xs  ">
                                 <Badge
                                   className={clsx(
-                                    {
-                                      "bg-red-300 text-red-800 text-xs":
-                                        !cell[6] && !cell[5],
-                                    },
-                                    {
-                                      "bg-green-300 text-green-800 text-xs":
-                                        cell[6] && cell[5],
-                                    }
+                                    "bg-transparent pointer-events-none"
                                   )}
                                 >
-                                  {cell[6] ? "Da" : "Nu"}
+                                  {cell[6] ? (
+                                    <CircleCheck
+                                      size={20}
+                                      className="fill-green-200 stroke-1 stroke-green-800"
+                                    />
+                                  ) : (
+                                    <CircleX
+                                      size={20}
+                                      className="fill-red-300 stroke-1 stroke-red-800"
+                                    />
+                                  )}
                                 </Badge>
                               </TableCell>
                               <TableCell className="text-xs ">
@@ -212,34 +217,33 @@ const ExcelDisplay = ({}: {}) => {
                                   : "-"}
                               </TableCell>
                               <TableCell className="text-xs">
+                                {cell[6] && cell[5] ? (
+                                  <CircleCheck
+                                    size={20}
+                                    className="fill-green-200 stroke-1 stroke-green-800"
+                                  />
+                                ) : null}
+
+                                {!cell[6] && !cell[5] ? (
+                                  <CircleX
+                                    size={20}
+                                    className="fill-red-300 stroke-1 stroke-red-800"
+                                  />
+                                ) : null}
+                              </TableCell>
+                              <TableCell className="flex flex-row items-center justify-between">
                                 <Badge
                                   className={clsx(
                                     {
-                                      "bg-red-300 text-red-800  text-xs":
-                                        !cell[6] && !cell[5],
+                                      "bg-red-300 text-red-800 text-xs w-full pointer-events-none":
+                                        actual - cell[4] !== 0,
                                     },
                                     {
-                                      "bg-green-300 text-green-800 text-xs":
-                                        cell[6] && cell[5],
+                                      "bg-green-300 text-green-800 text-xs  w-full pointer-events-none":
+                                        actual - cell[4] === 0,
                                     }
                                   )}
-                                >
-                                  {cell[5] ? "Da" : "Nu"}
-                                </Badge>
-                              </TableCell>
-                              <TableCell
-                                className={clsx(
-                                  {
-                                    "bg-red-300 text-red-800  text-xs":
-                                      actual - cell[4] !== 0,
-                                  },
-                                  {
-                                    "bg-green-300 text-green-800 text-xs":
-                                      actual - cell[4] === 0,
-                                  }
-                                )}
-                              >
-                                {`${actual} kWh`}
+                                >{`${actual} kWh`}</Badge>
                               </TableCell>
                             </TableRow>
                           );

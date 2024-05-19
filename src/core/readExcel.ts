@@ -42,7 +42,7 @@ export const readExcel = async (file: any) => {
       res({
         reportSheet: reportSheet,
         correctedTotals: corrected,
-        fileName: file.name.split(".")[0],
+        fileName: file.name,
       });
     };
 
