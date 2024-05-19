@@ -22,6 +22,7 @@ import {
   TableHead,
   TableBody,
   TableCell,
+  TableCaption,
 } from "@/components/ui/table";
 
 import * as XLSX from "xlsx";
@@ -111,8 +112,8 @@ const ExcelDisplay = ({}: {}) => {
   console.log(showDetails);
 
   return (
-    <div className="w-full h-full mt-[70px]  flex flex-col items-center ">
-      <Card className="w-full max-w-[1000px] mx-10 h-fit">
+    <div className="w-full h-full mt-[70px] ml-10 mr-10 flex flex-col items-center ">
+      <Card className="w-full max-w-[1200px] mx-10 h-fit">
         <CardHeader>
           <CardTitle>Incarca dosar cu documente</CardTitle>
           <CardDescription>
@@ -142,7 +143,7 @@ const ExcelDisplay = ({}: {}) => {
         </CardContent>
       </Card>
       {totalsData.length ? (
-        <Card className=" mb-[50px]  w-full max-w-[1000px] m-10 mb-50 mt-10 h-fit">
+        <Card className=" mb-[50px]  w-full max-w-[1200px]  mb-50 mt-10 h-fit">
           <CardHeader>
             <CardTitle className="w-full flex flex-row justify-between">
               {`Rezultate: (${totalsData?.length}/${totalFileCount})`}
@@ -181,8 +182,15 @@ const ExcelDisplay = ({}: {}) => {
                   </CardHeader>
                   <CardContent>
                     <Table className="max-h-[250px]">
+                      <TableCaption>
+                        Lista actiuni. Daca este gol inseamna ca datele din
+                        fisier erau corecte. Puteti vedea mai multe detalii
+                        utilizand switchul de deasupra tabelului.
+                      </TableCaption>
                       <TableHeader className="h-fit ">
                         <TableRow>
+                          <TableHead className="text-xs">IDX</TableHead>
+
                           <TableHead className="text-xs">COD LC</TableHead>
                           <TableHead className="text-xs">Denumire</TableHead>
                           <TableHead className="text-xs">Gasit corr.</TableHead>
@@ -212,6 +220,9 @@ const ExcelDisplay = ({}: {}) => {
                                 })}
                                 key={`${cell[0]}${cellIndex}`}
                               >
+                                <TableCell className="text-xs">
+                                  {cellIndex + 1}
+                                </TableCell>
                                 <TableCell className="text-xs">
                                   {cell[1]}
                                 </TableCell>
@@ -255,13 +266,13 @@ const ExcelDisplay = ({}: {}) => {
                                       className="fill-green-200 stroke-1 stroke-green-800"
                                     />
                                   ) : null}
-
                                   {!cell[6] && !cell[5] ? (
                                     <CircleX
                                       size={20}
                                       className="fill-red-300 stroke-1 stroke-red-800"
                                     />
                                   ) : null}
+                                  {cell[3] === cell[4] ? <>{"-"}</> : null}
                                 </TableCell>
                                 <TableCell className="flex flex-row items-center justify-between">
                                   <Badge
