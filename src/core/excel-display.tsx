@@ -100,7 +100,7 @@ const ExcelDisplay = ({}: {}) => {
   };
 
   return (
-    <div className="w-full mt-[70px] flex flex-col items-center ">
+    <div className="w-full h-full mt-[70px]  flex flex-col items-center ">
       <Card className="w-full max-w-[1000px] mx-10 h-fit">
         <CardHeader>
           <CardTitle>Incarca dosar cu documente</CardTitle>
@@ -131,7 +131,7 @@ const ExcelDisplay = ({}: {}) => {
         </CardContent>
       </Card>
       {totalsData.length ? (
-        <Card className="w-full max-w-[1000px] mx-10 mt-10 h-fit">
+        <Card className=" mb-[50px]  w-full max-w-[1000px] m-10 mb-50 mt-10 h-fit">
           <CardHeader>
             <CardTitle className="w-full flex flex-row justify-between">
               {`Rezultate: (${totalsData?.length}/${totalFileCount})`}

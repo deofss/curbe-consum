@@ -10,7 +10,7 @@ function App() {
       <Helmet>
         <title>DEO</title>
       </Helmet>
-      <div className="w-full h-screen p-md flex justify-center">
+      <div className="w-full  p-md flex justify-center">
         {/* <button disabled={isLoading} onClick={handleDownload}>
           {isLoading ? "Loading" : "Download"}
         </button> */}
