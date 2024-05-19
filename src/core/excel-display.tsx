@@ -26,7 +26,7 @@ import clsx from "clsx";
 
 const ExcelDisplay = ({}: {}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [totalFileCount, setTotalFileCount] = useState(0);
   const [reportData, setReportData] = useState<any>([]);
   const [totalsData, setTotalsData] = useState<any>([]);
 
@@ -111,6 +111,7 @@ const ExcelDisplay = ({}: {}) => {
             {isLoading ? <LoaderCircle className="animate-spin" /> : null}
             {totalsData.length || isLoading ? null : (
               <DirectoryInput
+                setTotalFileCount={setTotalFileCount}
                 isLoading={isLoading}
                 onDirectorySelect={handleDirectorySelect}
               />
@@ -131,13 +132,13 @@ const ExcelDisplay = ({}: {}) => {
         <Card className="w-full max-w-[1000px] mx-10 mt-10 h-fit">
           <CardHeader>
             <CardTitle className="w-full flex flex-row justify-between">
-              Rezultate{" "}
+              {`Rezultate: (${totalsData?.length}/${totalFileCount})`}
               {isLoading ? null : (
                 <Button onClick={handleDownload}>Descarca raport</Button>
               )}
             </CardTitle>
             <CardDescription>
-              Rezultatele vor fi afisate mai jos
+              {`Rezultatele vor fi afisate mai jos`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -226,7 +227,20 @@ const ExcelDisplay = ({}: {}) => {
                                   {cell[5] ? "Da" : "Nu"}
                                 </Badge>
                               </TableCell>
-                              <TableCell>{`${actual} kWh`}</TableCell>
+                              <TableCell
+                                className={clsx(
+                                  {
+                                    "bg-red-300 text-red-800  text-xs":
+                                      actual - cell[4] !== 0,
+                                  },
+                                  {
+                                    "bg-green-300 text-green-800 text-xs":
+                                      actual - cell[4] === 0,
+                                  }
+                                )}
+                              >
+                                {`${actual} kWh`}
+                              </TableCell>
                             </TableRow>
                           );
                         })}

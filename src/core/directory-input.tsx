@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 
 const DirectoryInput = ({
   onDirectorySelect,
+  setTotalFileCount,
 }: {
   onDirectorySelect: any;
   isLoading: boolean;
+  setTotalFileCount: any;
 }) => {
   const handleDirectoryChange = (e: any) => {
     const directory = e.target.files;
+    setTotalFileCount(e.target.files.length);
     onDirectorySelect(directory);
   };
   const ref = React.useRef<HTMLInputElement>(null);
