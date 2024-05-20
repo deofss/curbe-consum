@@ -109,8 +109,6 @@ const ExcelDisplay = ({}: {}) => {
     });
   };
 
-  console.log(showDetails);
-
   return (
     <div className="w-full h-full mt-[70px] ml-10 mr-10 flex flex-col items-center ">
       <Card className="w-full max-w-[1200px] mx-10 h-fit">
@@ -196,7 +194,7 @@ const ExcelDisplay = ({}: {}) => {
                           <TableHead className="text-xs">Gasit corr.</TableHead>
                           <TableHead className="text-xs">Val. MDM</TableHead>
                           <TableHead className="text-xs">
-                            {`Val. Converge`}
+                            {`Val. SAP`}
                           </TableHead>
 
                           <TableHead className="text-xs">Diferenta</TableHead>
