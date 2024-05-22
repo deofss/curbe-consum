@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DirectoryInput from "./directory-input";
+import { nanoid } from "nanoid";
 import { readExcel } from "./readExcel";
 import {
   Card,
@@ -14,6 +15,18 @@ import { Badge } from "@/components/ui/badge";
 import { CircleCheck, CircleX } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import {
   Table,
@@ -51,10 +64,20 @@ const ExcelDisplay = ({}: {}) => {
         const data: any = await readExcel(file);
 
         if (data.reportSheet && data.correctedTotals) {
-          setReportData((prevData: any) => [...prevData, ...data?.reportSheet]);
+          setReportData((prevData: any) => [
+            ...prevData,
+            {
+              data: data?.reportSheet,
+              fileName: data?.fileName,
+            },
+          ]);
           setTotalsData((prevData: any) => [
             ...prevData,
-            { data: data?.correctedTotals, fileName: data?.fileName },
+            {
+              data: data?.correctedTotals,
+              reports: data?.reportSheet,
+              fileName: data?.fileName,
+            },
           ]);
         }
       }
@@ -72,16 +95,25 @@ const ExcelDisplay = ({}: {}) => {
   };
 
   const handleDownload = async () => {
-    const workbook = XLSX.utils.book_new();
-
-    const reportSheet = XLSX.utils.aoa_to_sheet(reportData);
-
-    XLSX.utils.book_append_sheet(workbook, reportSheet, "Report");
-    let index = 1;
     for (let total of totalsData) {
-      const totalDataFields = total.data;
+      const workbook = XLSX.utils.book_new();
+
       const fileName = total.fileName;
-      let shortFileName = fileName.split(".")[0].substring(0, 20);
+
+      const reportDataObject = reportData.find(
+        (item: any) => item?.fileName === fileName
+      )?.data;
+
+      const reportSheet = XLSX.utils.aoa_to_sheet(reportDataObject);
+
+      XLSX.utils.book_append_sheet(workbook, reportSheet, "Report");
+      let totalDataFields: any[] = [];
+      let totalData = total.data;
+      for (const elements of totalData) {
+        elements.splice(4, 6);
+        totalDataFields = [...totalDataFields, elements];
+      }
+      console.log(totalDataFields);
 
       const totalsSheetData = totalDataFields.map((item: any) =>
         item ? item.flat() : item
@@ -97,16 +129,14 @@ const ExcelDisplay = ({}: {}) => {
       );
 
       const totalsSheet = XLSX.utils.aoa_to_sheet(transposedMatrix);
-      XLSX.utils.book_append_sheet(
-        workbook,
-        totalsSheet,
-        `${index}. ${shortFileName}`
-      );
-      index++;
+      XLSX.utils.book_append_sheet(workbook, totalsSheet, `Total LC`);
+
+      await XLSX.writeFile(workbook, `${fileName}`, {
+        compression: true,
+      });
     }
-    await XLSX.writeFile(workbook, `Report.xlsx`, {
-      compression: true,
-    });
+
+    window.location.reload();
   };
 
   return (
@@ -140,13 +170,43 @@ const ExcelDisplay = ({}: {}) => {
           </div>
         </CardContent>
       </Card>
-      {totalsData.length ? (
+      {totalsData?.length ? (
         <Card className=" mb-[50px]  w-full max-w-[1200px]  mb-50 mt-10 h-fit">
           <CardHeader>
             <CardTitle className="w-full flex flex-row justify-between">
               {`Rezultate: (${totalsData?.length}/${totalFileCount})`}
               {isLoading ? null : (
-                <Button onClick={handleDownload}>Descarca raport</Button>
+                <>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button>Descarca raporoarte</Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Share link</DialogTitle>
+                        <DialogDescription>
+                          Verificati dosarul in care se vor descarca fisierele
+                          din setarile browserului si apasate pe butonul
+                          "Descarca rapoarte".
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <DialogFooter className="sm:justify-end gap-4">
+                        <DialogClose asChild>
+                          <Button type="button" variant="secondary">
+                            Inchide
+                          </Button>
+                        </DialogClose>
+                        <Button
+                          type="submit"
+                          onClick={async () => await handleDownload()}
+                        >
+                          Descarca raporarte
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </>
               )}
             </CardTitle>
             <CardDescription>
@@ -160,6 +220,12 @@ const ExcelDisplay = ({}: {}) => {
                   <CardHeader>
                     <CardTitle>{`Extras din fisier: ${item.fileName}`}</CardTitle>
                     <CardDescription>
+                      <div>
+                        <MissingComponent
+                          reports={item.reports}
+                          totals={item?.data}
+                        />
+                      </div>
                       <div className="flex mt-4 items-center space-x-2">
                         <Switch
                           checked={showDetails[index]!}
@@ -188,44 +254,45 @@ const ExcelDisplay = ({}: {}) => {
                       <TableHeader className="h-fit ">
                         <TableRow>
                           <TableHead className="text-xs">IDX</TableHead>
-
                           <TableHead className="text-xs">COD LC</TableHead>
                           <TableHead className="text-xs">Denumire</TableHead>
-                          <TableHead className="text-xs">Gasit corr.</TableHead>
-                          <TableHead className="text-xs">Val. MDM</TableHead>
+                          <TableHead className="text-xs">
+                            Gasit corres. SAP
+                          </TableHead>
+
                           <TableHead className="text-xs">
                             {`Val. SAP`}
                           </TableHead>
+                          <TableHead className="text-xs">Val. Corr</TableHead>
 
-                          <TableHead className="text-xs">Diferenta</TableHead>
+                          <TableHead className="text-xs">Discr. data</TableHead>
                           <TableHead className="text-xs">Corectat</TableHead>
-                          <TableHead className="text-xs">Actual</TableHead>
+                          <TableHead className="text-xs">Actual kWh</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {item?.data
                           .filter((_: any, rowIndex: number) => rowIndex !== 0)
                           .map((cell: any, cellIndex: number) => {
-                            const actual = cell[8]?.reduce(
-                              (acc: number, curr: number) => acc + curr,
-                              0
-                            );
+                            let actual = cell[cell.length - 1];
                             return (
                               <TableRow
                                 className={clsx({
                                   "hidden pointer-events-none":
-                                    !showDetails[index] && cell[3] === cell[4],
+                                    !showDetails[index] &&
+                                    cell[8] === 0 &&
+                                    cell[7],
                                 })}
-                                key={`${cell[0]}${cellIndex}`}
+                                key={`${cell[1]}${cellIndex}`}
                               >
                                 <TableCell className="text-xs">
                                   {cellIndex + 1}
                                 </TableCell>
                                 <TableCell className="text-xs">
-                                  {cell[1]}
+                                  {cell[2]}
                                 </TableCell>
                                 <TableCell className="text-xs">
-                                  {cell[0]}
+                                  {cell[1]}
                                 </TableCell>
                                 <TableCell className="text-xs  ">
                                   <Badge
@@ -233,7 +300,7 @@ const ExcelDisplay = ({}: {}) => {
                                       "bg-transparent pointer-events-none"
                                     )}
                                   >
-                                    {cell[6] ? (
+                                    {cell[7] ? (
                                       <CircleCheck
                                         size={20}
                                         className="fill-green-200 stroke-1 stroke-green-800"
@@ -247,44 +314,55 @@ const ExcelDisplay = ({}: {}) => {
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="text-xs ">
-                                  {`${cell[3]} kWh`}
+                                  {`${cell[5]} kWh`}
                                 </TableCell>
                                 <TableCell className="text-xs">
-                                  {cell[6] ? `${cell[4]} kWh` : "-"}
+                                  {cell[8] ? `${cell[8]} kWh` : "-"}
                                 </TableCell>
                                 <TableCell className="text-xs">
-                                  {cell[6] && cell[5]
-                                    ? `${cell[4] - cell[3]} kWh`
-                                    : "-"}
+                                  {cell[9] ? (
+                                    <CircleCheck
+                                      size={20}
+                                      className="fill-red-300 stroke-1 stroke-red-800"
+                                    />
+                                  ) : (
+                                    <CircleX
+                                      size={20}
+                                      className="fill-green-200 stroke-1 stroke-green-800"
+                                    />
+                                  )}
                                 </TableCell>
                                 <TableCell className="text-xs">
-                                  {cell[6] && cell[5] ? (
+                                  {cell[5] === actual && cell[8] ? (
                                     <CircleCheck
                                       size={20}
                                       className="fill-green-200 stroke-1 stroke-green-800"
                                     />
                                   ) : null}
-                                  {!cell[6] && !cell[5] ? (
+                                  {!cell[7] && !cell[6] ? (
                                     <CircleX
                                       size={20}
                                       className="fill-red-300 stroke-1 stroke-red-800"
                                     />
+                                  ) : !cell[8] ? (
+                                    <>{"-"}</>
                                   ) : null}
-                                  {cell[3] === cell[4] ? <>{"-"}</> : null}
                                 </TableCell>
-                                <TableCell className="flex flex-row items-center justify-between">
+                                <TableCell className="w-[120px] flex flex-row items-center justify-between">
                                   <Badge
                                     className={clsx(
                                       {
                                         "bg-red-300 text-red-800 text-xs w-full pointer-events-none":
-                                          actual - cell[4] !== 0,
+                                          actual - cell[5] !== 0,
                                       },
                                       {
                                         "bg-green-300 text-green-800 text-xs  w-full pointer-events-none":
-                                          actual - cell[4] === 0,
+                                          actual - cell[5] === 0,
                                       }
                                     )}
-                                  >{`${actual} kWh`}</Badge>
+                                  >
+                                    <p className="text-[10px]">{`${actual} kWh`}</p>
+                                  </Badge>
                                 </TableCell>
                               </TableRow>
                             );
@@ -298,6 +376,51 @@ const ExcelDisplay = ({}: {}) => {
           </CardContent>
         </Card>
       ) : null}
+    </div>
+  );
+};
+
+const MissingComponent = ({
+  reports,
+  totals,
+}: {
+  reports: any;
+  totals: any;
+}) => {
+  const lcArray = reports
+    .filter((item: any[], index: number) => index !== 0)
+    .map((item: any) => item[10]?.v);
+  const lcSet = new Set(lcArray);
+  const setArr = Array.from(lcSet);
+  const totalsLC = totals?.map((item: any) => item[2]);
+
+  let missingElementsArray: any[] = [];
+  for (let setElement of setArr) {
+    if (!setElement) break;
+    if (!totalsLC.includes(setElement)) {
+      missingElementsArray.push(setElement);
+    }
+  }
+
+  if (!missingElementsArray.length) {
+    return (
+      <div>Din raportul MDM nu lipsesc elemente prezente in raportul SAP!</div>
+    );
+  }
+  return (
+    <div className="mt-4 ">
+      In raportul MDM lipsesc urmatoarele elemente din SAP:
+      <div className="grid mt-4 md:grid-cols-8  sm:grid-cols-6 xs:grid-cols-4 gap-2">
+        {missingElementsArray?.map((item: string) => (
+          <Badge
+            variant="secondary"
+            className="items-center justify-center flex pointer-events-none bg-yellow-200 text-yellow-800"
+          >
+            <p>{item}</p>
+          </Badge>
+        ))}
+      </div>
+      <Separator className="mt-4" />
     </div>
   );
 };

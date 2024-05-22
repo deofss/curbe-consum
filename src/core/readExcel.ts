@@ -16,6 +16,7 @@ export const readExcel = async (file: any) => {
         type: "binary",
         WTF: true,
         dense: true,
+        cellDates: true,
       }).Sheets[sheetNames[0]];
 
       const totalSheet = XLSX.read(data, {
@@ -37,9 +38,9 @@ export const readExcel = async (file: any) => {
 
       const reports = useReports(parsedReportSheet);
       const totals = useTotals(parsedTotalSheet);
-
       const corrected = useCorrect(reports as any[], totals as any[]);
       res({
+        reports: reports,
         reportSheet: reportSheet,
         correctedTotals: corrected,
         fileName: file.name,
