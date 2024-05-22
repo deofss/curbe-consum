@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import DirectoryInput from "./directory-input";
-import { nanoid } from "nanoid";
 import { readExcel } from "./readExcel";
 import {
   Card,
@@ -47,6 +46,7 @@ const ExcelDisplay = ({}: {}) => {
   const [reportData, setReportData] = useState<any>([]);
   const [totalsData, setTotalsData] = useState<any>([]);
   const [showDetails, setShowDetails] = useState<any[]>([]);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     setShowDetails((_) =>
@@ -199,9 +199,17 @@ const ExcelDisplay = ({}: {}) => {
                         </DialogClose>
                         <Button
                           type="submit"
-                          onClick={async () => await handleDownload()}
+                          onClick={async () => {
+                            setIsDownloading(true);
+                            await handleDownload();
+                          }}
+                          className="w-[170px]"
                         >
-                          Descarca raporarte
+                          {isDownloading ? (
+                            <LoaderCircle className="animate-spin" size={16} />
+                          ) : (
+                            "Descarca raporarte"
+                          )}
                         </Button>
                       </DialogFooter>
                     </DialogContent>
