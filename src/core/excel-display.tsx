@@ -37,6 +37,7 @@ import {
   TableCaption,
 } from "@/components/ui/table";
 
+import { useToast } from "@/components/ui/use-toast";
 import * as XLSX from "xlsx";
 import clsx from "clsx";
 
@@ -47,6 +48,9 @@ const ExcelDisplay = ({}: {}) => {
   const [totalsData, setTotalsData] = useState<any>([]);
   const [showDetails, setShowDetails] = useState<any[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     setShowDetails((_) =>
@@ -95,48 +99,65 @@ const ExcelDisplay = ({}: {}) => {
   };
 
   const handleDownload = async () => {
-    for (let total of totalsData) {
-      const workbook = XLSX.utils.book_new();
+    setIsDownloading(false);
+    try {
+      for (let total of totalsData) {
+        const workbook = XLSX.utils.book_new();
 
-      const fileName = total.fileName;
+        const fileName = total.fileName;
 
-      const reportDataObject = reportData.find(
-        (item: any) => item?.fileName === fileName
-      )?.data;
+        const reportDataObject = reportData.find(
+          (item: any) => item?.fileName === fileName
+        )?.data;
 
-      const reportSheet = XLSX.utils.aoa_to_sheet(reportDataObject);
+        const reportSheet = XLSX.utils.aoa_to_sheet(reportDataObject);
 
-      XLSX.utils.book_append_sheet(workbook, reportSheet, "Report");
-      let totalDataFields: any[] = [];
-      let totalData = total.data;
-      for (const elements of totalData) {
-        elements.splice(4, 6);
-        totalDataFields = [...totalDataFields, elements];
+        XLSX.utils.book_append_sheet(workbook, reportSheet, "Report");
+        let totalDataFields: any[] = [];
+        let totalData = total.data;
+        for (const elements of totalData) {
+          // elements.splice(4, 6);
+          totalDataFields = [
+            ...totalDataFields,
+            [...elements.slice(0, 4), ...elements.slice(10)],
+          ];
+          console.log(totalDataFields);
+        }
+
+        const totalsSheetData = totalDataFields.map(
+          (item: any, index: number) => (item ? item?.flat() : item)
+        );
+
+        const maxLen = totalsSheetData.reduce(
+          (max: number, { length }: { length: number }) =>
+            Math.max(max, length),
+          0
+        );
+
+        const transposedMatrix = Array.from({ length: maxLen }, (_, i) =>
+          totalsSheetData.map((col: any) => col[i])
+        );
+
+        const totalsSheet = XLSX.utils.aoa_to_sheet(transposedMatrix);
+        XLSX.utils.book_append_sheet(workbook, totalsSheet, `Total LC`);
+
+        await XLSX.writeFile(workbook, `${fileName}`, {
+          compression: true,
+        });
       }
-      console.log(totalDataFields);
-
-      const totalsSheetData = totalDataFields.map((item: any) =>
-        item ? item.flat() : item
-      );
-
-      const maxLen = totalsSheetData.reduce(
-        (max: number, { length }: { length: number }) => Math.max(max, length),
-        0
-      );
-
-      const transposedMatrix = Array.from({ length: maxLen }, (_, i) =>
-        totalsSheetData.map((col: any) => col[i])
-      );
-
-      const totalsSheet = XLSX.utils.aoa_to_sheet(transposedMatrix);
-      XLSX.utils.book_append_sheet(workbook, totalsSheet, `Total LC`);
-
-      await XLSX.writeFile(workbook, `${fileName}`, {
-        compression: true,
+      toast({
+        title: "Fisierele au fost descarcate!",
+        description:
+          "Verifica dosarul de download pentru a vizualiza fisierele descarcate.",
       });
+      setIsSuccess(true);
+    } catch (error) {
+      setIsError(true);
     }
 
-    window.location.reload();
+    setIsDownloading(false);
+
+    // window.location.reload();
   };
 
   return (
@@ -183,34 +204,79 @@ const ExcelDisplay = ({}: {}) => {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>
-                        <DialogTitle>Share link</DialogTitle>
+                        <DialogTitle>Descarcare rapoarte corectate</DialogTitle>
                         <DialogDescription>
-                          Verificati dosarul in care se vor descarca fisierele
-                          din setarile browserului si apasate pe butonul
-                          "Descarca rapoarte".
+                          {isError
+                            ? "Fisierele nu au putut fi descarcate, va rog verificate datele fisierelor"
+                            : null}
+                          {isSuccess ? (
+                            <>
+                              <p>Fisierele au fost descarcate cu succes.</p>
+                              <p>
+                                Verificati dosarul de descarcare pentru a
+                                vizualiza fisierele.
+                              </p>
+                            </>
+                          ) : null}
+                          {!isError && !isSuccess
+                            ? ` Verificati dosarul in care se vor descarca
+                              fisierele din setarile browserului si apasate pe
+                              butonul "Descarca rapoarte".`
+                            : null}
                         </DialogDescription>
                       </DialogHeader>
 
                       <DialogFooter className="sm:justify-end gap-4">
-                        <DialogClose asChild>
-                          <Button type="button" variant="secondary">
-                            Inchide
-                          </Button>
-                        </DialogClose>
-                        <Button
-                          type="submit"
-                          onClick={async () => {
-                            setIsDownloading(true);
-                            await handleDownload();
-                          }}
-                          className="w-[170px]"
-                        >
-                          {isDownloading ? (
-                            <LoaderCircle className="animate-spin" size={16} />
-                          ) : (
-                            "Descarca raporarte"
-                          )}
-                        </Button>
+                        {!isSuccess && !isError ? (
+                          <>
+                            {isDownloading ? null : (
+                              <DialogClose asChild>
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  onClick={() => {
+                                    setIsDownloading(false);
+                                    setIsError(false);
+                                    setIsSuccess(false);
+                                  }}
+                                >
+                                  Inchide
+                                </Button>
+                              </DialogClose>
+                            )}
+                            <Button
+                              type="submit"
+                              onClick={async () => {
+                                setIsDownloading(true);
+                                await handleDownload();
+                              }}
+                              className="w-[170px]"
+                            >
+                              {isDownloading ? (
+                                <LoaderCircle
+                                  className="animate-spin"
+                                  size={16}
+                                />
+                              ) : (
+                                "Descarca raporarte"
+                              )}
+                            </Button>
+                          </>
+                        ) : (
+                          <DialogClose asChild>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={() => {
+                                setIsLoading(false);
+                                setIsError(false);
+                                setIsSuccess(false);
+                              }}
+                            >
+                              Inchide
+                            </Button>
+                          </DialogClose>
+                        )}
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
