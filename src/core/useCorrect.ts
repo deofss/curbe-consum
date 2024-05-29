@@ -1,6 +1,10 @@
 import { correctionAlgorithm } from "./correctionAlgorithm";
 
-export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
+export const useCorrect = (
+  reportsArray: any[],
+  totalsArray: any[],
+  fileName: string
+) => {
   if (!reportsArray) return;
   if (!totalsArray) return;
 
@@ -72,9 +76,11 @@ export const useCorrect = (reportsArray: any[], totalsArray: any[]) => {
       )
     ) {
       let res = correctionAlgorithm(
+        fileName,
         [...itemRes.values].slice(0, -1),
         reportsTotalArray,
         itemRes.codLC,
+
         timestampsArray,
         minBillingPeriod,
         maxBillingPeriod

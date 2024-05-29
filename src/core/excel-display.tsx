@@ -191,7 +191,7 @@ const ExcelDisplay = () => {
                   <DownloadDetailsButton />
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button>Descarca raporoarte</Button>
+                      <Button>Descarca raporoarte corectate</Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-md">
                       <DialogHeader>

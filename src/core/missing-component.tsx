@@ -21,7 +21,7 @@ const MissingComponent = ({ item }: { item: any }) => {
     if (!totalsSheetLCArray.includes(lcSAPSHeet) && lcSAPSHeet) {
       missingElementsArray = [
         ...missingElementsArray,
-        [lcSAPSHeet, item.fileName],
+        [lcSAPSHeet, item.fileName, "lipsa_sheet_sap"],
       ];
     }
   }

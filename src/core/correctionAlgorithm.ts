@@ -1,6 +1,9 @@
 import moment from "moment";
+import { store } from "@/store";
+import { addSingleValue } from "@/redux-features/sapToMDMSlice";
 
 export const correctionAlgorithm = (
+  fileName: string,
   valuesArray: any[],
   reportsTotal: number,
   codLC: any,
@@ -10,8 +13,6 @@ export const correctionAlgorithm = (
 ) => {
   let countRemoveFromStart = 0;
   let countRemovedFromEnd = 0;
-  // let datesRemovedFromEnd: any[] = [];
-  // let datesRemovedFromStart: any[] = [];
   let newValuesArray: any[] = [];
   let possitiveValuesCount = 0;
 
@@ -31,40 +32,55 @@ export const correctionAlgorithm = (
     let dayWOTime = moment(timestampsArray[i], "DD.MM.YYYY").format(
       "DD-MMMM-YYYY"
     );
+    let currentTime = moment(timestampsArray[i], "DD.MM.YYYY hh:mm").format(
+      "HH:mm"
+    );
     const currentDate = new Date(dayWOTime);
-    if (currentDate < minBillingDate) {
-      countRemoveFromStart++;
-      // datesRemovedFromStart = [...datesRemovedFromStart, currentDate];
-    }
+
     if (currentDate >= minBillingDate && currentDate <= maxBillingDate) {
-      if (currentDate === minBillingDate) {
-        console.log(currentDate, minBillingDate);
+      if (currentDate.getTime() === minBillingDate.getTime()) {
+        if (currentTime === "00:00") {
+          countRemoveFromStart++;
+          store.dispatch(
+            addSingleValue([codLC, fileName, "detectat_schimb_furnizor"])
+          );
+        } else {
+          newValuesArray = [...newValuesArray, valuesArray[i]];
+          if (valuesArray[i] > 0) {
+            possitiveValuesCount++;
+          }
+        }
       }
-      if (currentDate === minBillingDate) {
-        console.log(currentDate, minBillingDate);
+
+      if (currentDate.getTime() === maxBillingDate.getTime()) {
+        if (currentTime !== "00:00") {
+          countRemovedFromEnd++;
+          store.dispatch(
+            addSingleValue([codLC, fileName, "detectat_schimb_furnizor"])
+          );
+        } else {
+          newValuesArray = [...newValuesArray, valuesArray[i]];
+          if (valuesArray[i] > 0) {
+            possitiveValuesCount++;
+          }
+        }
       }
-      newValuesArray = [...newValuesArray, valuesArray[i]];
-      possitiveValuesCount++;
+
+      if (currentDate > minBillingDate && currentDate < maxBillingDate) {
+        newValuesArray = [...newValuesArray, valuesArray[i]];
+        if (valuesArray[i] > 0) {
+          possitiveValuesCount++;
+        }
+      }
     }
+
     if (currentDate > maxBillingDate) {
       countRemovedFromEnd++;
-      // datesRemovedFromEnd = [...datesRemovedFromEnd, currentDate];
+    }
+    if (currentDate < minBillingDate) {
+      countRemoveFromStart++;
     }
   }
-
-  // if (countRemoveFromStart > 0 || countRemovedFromEnd > 0) {
-  //   console.log(
-  //     `Cod LC: ${codLC},Removed from start: ${countRemoveFromStart}, Removed from end: ${countRemovedFromEnd}, Length of values: ${
-  //       newValuesArray.length
-  //     }, Sum:${
-  //       countRemoveFromStart + countRemovedFromEnd + newValuesArray.length
-  //     }, Should be long: ${valuesArray.length}`
-  //   );
-  //   console.log(minBillingPeriodWOT);
-  //   console.log(maxBillingPeriodWOT);
-  //   // console.log(datesRemovedFromStart);
-  //   // console.log(datesRemovedFromEnd);
-  // }
 
   const valueToCorrect =
     reportsTotal -

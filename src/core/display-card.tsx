@@ -91,7 +91,7 @@ const DisplayCard = ({
               <TableHead className="text-xs">{`Val. SAP`}</TableHead>
               <TableHead className="text-xs">Val. Corr</TableHead>
 
-              <TableHead className="text-xs">Discr. data</TableHead>
+              <TableHead className="text-xs">Schimbare furn.</TableHead>
               <TableHead className="text-xs">Corectat</TableHead>
               <TableHead className="text-xs">Actual kWh</TableHead>
             </TableRow>
@@ -126,14 +126,14 @@ const DisplayCard = ({
                   <TableCell className="text-xs">{cellIndex + 1}</TableCell>
                   <TableCell className="text-xs">{cell[2]}</TableCell>
                   <TableCell className="text-xs">{cell[1]}</TableCell>
-                  <TableCell className="h-full w-full min-w-[300px]">
+                  <TableCell className="h-full w-full min-w-[300px] p-1">
                     <Chart
                       chartData={rawTotalsChartData.slice(0, -1)}
                       key={"1st"}
                     />
                   </TableCell>
 
-                  <TableCell className="h-full w-full min-w-[300px]">
+                  <TableCell className="h-full w-full min-w-[300px] p-1">
                     <Chart chartData={actualTotalsChartData} key={"second"} />
                   </TableCell>
 

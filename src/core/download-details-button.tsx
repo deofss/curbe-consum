@@ -11,17 +11,14 @@ const DownloadDetailsButton = () => {
 
   const handleDownloadSAPToMDM = async () => {
     setIsDownloadingDetails(true);
-    console.log(stateArray);
     try {
-      const concatArray = stateArray.map(
-        (item: any[]) => `${item[0]}*${item[1]}`
-      );
+      const concatArray = stateArray.map((item: any[]) => item.join("*"));
       const set = new Set(concatArray);
       const setArr: any = Array.from(set);
       let arr: any[][] = [];
       for (let setElement of setArr) {
         let tm = setElement.split("*");
-        arr.push([tm[0], tm[1]]);
+        arr.push(tm.map((item: any) => item));
       }
       const workbook = XLSX.utils.book_new();
       const sheet = XLSX.utils.aoa_to_sheet(arr);
@@ -40,7 +37,7 @@ const DownloadDetailsButton = () => {
       {isDownloadingDetails ? (
         <LoaderCircle className="animate-spin" size={16} />
       ) : (
-        <>Descarca raporoarte</>
+        <>Descarca detalii</>
       )}
     </Button>
   );
