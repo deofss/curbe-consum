@@ -15,12 +15,14 @@ export const correctionAlgorithm = (
   let newValuesArray: any[] = [];
   let possitiveValuesCount = 0;
 
+  // console.log(timestampsArray);
+
   const minBillingPeriodWOT = moment(minBillingPeriod, "DD.MM.YYYY")
     .add(1, "days")
     .format("DD-MMMM-YYYY");
 
   const maxBillingPeriodWOT = moment(maxBillingPeriod, "DD.MM.YYYY")
-    .add(1, "days")
+    .add(2, "days")
     .format("DD-MMMM-YYYY");
   const minBillingDate = new Date(minBillingPeriodWOT);
   const maxBillingDate = new Date(maxBillingPeriodWOT);
@@ -35,6 +37,12 @@ export const correctionAlgorithm = (
       // datesRemovedFromStart = [...datesRemovedFromStart, currentDate];
     }
     if (currentDate >= minBillingDate && currentDate <= maxBillingDate) {
+      if (currentDate === minBillingDate) {
+        console.log(currentDate, minBillingDate);
+      }
+      if (currentDate === minBillingDate) {
+        console.log(currentDate, minBillingDate);
+      }
       newValuesArray = [...newValuesArray, valuesArray[i]];
       possitiveValuesCount++;
     }

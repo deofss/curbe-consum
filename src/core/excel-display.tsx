@@ -10,11 +10,9 @@ import {
 } from "@/components/ui/card";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CircleCheck, CircleX } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
+import DownloadDetailsButton from "./download-details-button";
+
+import DisplayCard from "./display-card";
 
 import {
   Dialog,
@@ -27,40 +25,25 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableCaption,
-} from "@/components/ui/table";
-
 import { useToast } from "@/components/ui/use-toast";
 import * as XLSX from "xlsx";
-import clsx from "clsx";
 
-const ExcelDisplay = ({}: {}) => {
+const ExcelDisplay = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [totalFileCount, setTotalFileCount] = useState(0);
   const [reportData, setReportData] = useState<any>([]);
   const [totalsData, setTotalsData] = useState<any>([]);
-  const [showDetails, setShowDetails] = useState<any[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [uploadedDocumentNumber, setUploadedDocumentNumber] = useState(0);
   const { toast } = useToast();
-
-  useEffect(() => {
-    setShowDetails((_) =>
-      Array.from({ length: totalFileCount }, (i) => (i = false))
-    );
-  }, [totalFileCount]);
 
   const handleDirectorySelect = async (filesArray: any) => {
     setIsLoading(true);
     try {
+      let tmpTotalsData: any[] = [];
+      let tmpReportData: any[] = [];
       for (const file of filesArray) {
         // const {PathParams2}: string =
         file.webkitRelativePath.split("/")[2] ?? "";
@@ -68,23 +51,29 @@ const ExcelDisplay = ({}: {}) => {
         const data: any = await readExcel(file);
 
         if (data.reportSheet && data.correctedTotals) {
-          setReportData((prevData: any) => [
-            ...prevData,
+          tmpReportData = [
+            ...tmpReportData,
             {
               data: data?.reportSheet,
               fileName: data?.fileName,
             },
-          ]);
-          setTotalsData((prevData: any) => [
-            ...prevData,
+          ];
+          tmpTotalsData = [
+            ...tmpTotalsData,
             {
               data: data?.correctedTotals,
-              reports: data?.reportSheet,
+              rawData: data?.rawTotals,
+              reportsSheet: data?.reportsSheet,
+              reports: data?.reports,
               fileName: data?.fileName,
             },
-          ]);
+          ];
         }
+
+        setUploadedDocumentNumber((prev) => prev + 1);
       }
+      setReportData(tmpReportData);
+      setTotalsData(tmpTotalsData);
       setIsLoading(false);
     } catch (error) {
       // console.log(error);
@@ -96,6 +85,7 @@ const ExcelDisplay = ({}: {}) => {
   const clearDataHandler = () => {
     setReportData([]);
     setTotalsData([]);
+    setUploadedDocumentNumber(0);
   };
 
   const handleDownload = async () => {
@@ -121,7 +111,7 @@ const ExcelDisplay = ({}: {}) => {
             ...totalDataFields,
             [...elements.slice(0, 4), ...elements.slice(10)],
           ];
-          console.log(totalDataFields);
+          // console.log(totalDataFields);
         }
 
         const totalsSheetData = totalDataFields.map(
@@ -162,7 +152,7 @@ const ExcelDisplay = ({}: {}) => {
 
   return (
     <div className="w-full h-full mt-[70px] ml-10 mr-10 flex flex-col items-center ">
-      <Card className="w-full max-w-[1200px] mx-10 h-fit">
+      <Card className="w-full max-w-[1500px] mx-10 h-fit">
         <CardHeader>
           <CardTitle>Incarca dosar cu documente</CardTitle>
           <CardDescription>
@@ -191,13 +181,14 @@ const ExcelDisplay = ({}: {}) => {
           </div>
         </CardContent>
       </Card>
-      {totalsData?.length ? (
-        <Card className=" mb-[50px]  w-full max-w-[1200px]  mb-50 mt-10 h-fit">
+      {uploadedDocumentNumber > 0 ? (
+        <Card className=" mb-[50px]  w-full max-w-[1500px]  mb-50 mt-10 h-fit">
           <CardHeader>
             <CardTitle className="w-full flex flex-row justify-between">
-              {`Rezultate: (${totalsData?.length}/${totalFileCount})`}
+              {`Documente procesate: (${uploadedDocumentNumber}/${totalFileCount})`}
               {isLoading ? null : (
-                <>
+                <div className="flex flex-row gap-2">
+                  <DownloadDetailsButton />
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>Descarca raporoarte</Button>
@@ -280,7 +271,7 @@ const ExcelDisplay = ({}: {}) => {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                </>
+                </div>
               )}
             </CardTitle>
             <CardDescription>
@@ -290,211 +281,16 @@ const ExcelDisplay = ({}: {}) => {
           <CardContent>
             {totalsData?.map((item: any, index: number) => {
               return (
-                <Card key={`${index}${item.fileName}`} className="mt-4">
-                  <CardHeader>
-                    <CardTitle>{`Extras din fisier: ${item.fileName}`}</CardTitle>
-                    <CardDescription>
-                      <div>
-                        <MissingComponent
-                          reports={item.reports}
-                          totals={item?.data}
-                        />
-                      </div>
-                      <div className="flex mt-4 items-center space-x-2">
-                        <Switch
-                          checked={showDetails[index]!}
-                          onCheckedChange={() =>
-                            setShowDetails((prev) =>
-                              prev?.map((item, idx) =>
-                                idx === index ? !item : item
-                              )
-                            )
-                          }
-                          id={`${index}${item.fileName}`}
-                        />
-                        <Label htmlFor={`${index}${item.fileName}`}>
-                          Afiseaza tot
-                        </Label>
-                      </div>
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table className="max-h-[250px]">
-                      <TableCaption>
-                        Lista actiuni. Daca este gol inseamna ca datele din
-                        fisier erau corecte. Puteti vedea mai multe detalii
-                        utilizand switchul de deasupra tabelului.
-                      </TableCaption>
-                      <TableHeader className="h-fit ">
-                        <TableRow>
-                          <TableHead className="text-xs">IDX</TableHead>
-                          <TableHead className="text-xs">COD LC</TableHead>
-                          <TableHead className="text-xs">Denumire</TableHead>
-                          <TableHead className="text-xs">
-                            Gasit corres. SAP
-                          </TableHead>
-
-                          <TableHead className="text-xs">
-                            {`Val. SAP`}
-                          </TableHead>
-                          <TableHead className="text-xs">Val. Corr</TableHead>
-
-                          <TableHead className="text-xs">Discr. data</TableHead>
-                          <TableHead className="text-xs">Corectat</TableHead>
-                          <TableHead className="text-xs">Actual kWh</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {item?.data
-                          .filter((_: any, rowIndex: number) => rowIndex !== 0)
-                          .map((cell: any, cellIndex: number) => {
-                            let actual = cell[cell.length - 1];
-                            return (
-                              <TableRow
-                                className={clsx({
-                                  "hidden pointer-events-none":
-                                    !showDetails[index] &&
-                                    cell[8] === 0 &&
-                                    cell[7],
-                                })}
-                                key={`${cell[1]}${cellIndex}`}
-                              >
-                                <TableCell className="text-xs">
-                                  {cellIndex + 1}
-                                </TableCell>
-                                <TableCell className="text-xs">
-                                  {cell[2]}
-                                </TableCell>
-                                <TableCell className="text-xs">
-                                  {cell[1]}
-                                </TableCell>
-                                <TableCell className="text-xs  ">
-                                  <Badge
-                                    className={clsx(
-                                      "bg-transparent pointer-events-none"
-                                    )}
-                                  >
-                                    {cell[7] ? (
-                                      <CircleCheck
-                                        size={20}
-                                        className="fill-green-200 stroke-1 stroke-green-800"
-                                      />
-                                    ) : (
-                                      <CircleX
-                                        size={20}
-                                        className="fill-red-300 stroke-1 stroke-red-800"
-                                      />
-                                    )}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="text-xs ">
-                                  {`${cell[5]} kWh`}
-                                </TableCell>
-                                <TableCell className="text-xs">
-                                  {cell[8] ? `${cell[8]} kWh` : "-"}
-                                </TableCell>
-                                <TableCell className="text-xs">
-                                  {cell[9] ? (
-                                    <CircleCheck
-                                      size={20}
-                                      className="fill-red-300 stroke-1 stroke-red-800"
-                                    />
-                                  ) : (
-                                    <CircleX
-                                      size={20}
-                                      className="fill-green-200 stroke-1 stroke-green-800"
-                                    />
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-xs">
-                                  {cell[5] === actual && cell[8] ? (
-                                    <CircleCheck
-                                      size={20}
-                                      className="fill-green-200 stroke-1 stroke-green-800"
-                                    />
-                                  ) : null}
-                                  {!cell[7] && !cell[6] ? (
-                                    <CircleX
-                                      size={20}
-                                      className="fill-red-300 stroke-1 stroke-red-800"
-                                    />
-                                  ) : !cell[8] ? (
-                                    <>{"-"}</>
-                                  ) : null}
-                                </TableCell>
-                                <TableCell className="w-[120px] flex flex-row items-center justify-between">
-                                  <Badge
-                                    className={clsx(
-                                      {
-                                        "bg-red-300 text-red-800 text-xs w-full pointer-events-none":
-                                          actual - cell[5] !== 0,
-                                      },
-                                      {
-                                        "bg-green-300 text-green-800 text-xs  w-full pointer-events-none":
-                                          actual - cell[5] === 0,
-                                      }
-                                    )}
-                                  >
-                                    <p className="text-[10px]">{`${actual} kWh`}</p>
-                                  </Badge>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+                <DisplayCard
+                  item={item}
+                  key={`${index}${item.fileName}`}
+                  index={index}
+                />
               );
             })}
           </CardContent>
         </Card>
       ) : null}
-    </div>
-  );
-};
-
-const MissingComponent = ({
-  reports,
-  totals,
-}: {
-  reports: any;
-  totals: any;
-}) => {
-  const lcArray = reports
-    .filter((item: any[], index: number) => index !== 0)
-    .map((item: any) => item[10]?.v);
-  const lcSet = new Set(lcArray);
-  const setArr = Array.from(lcSet);
-  const totalsLC = totals?.map((item: any) => item[2]);
-
-  let missingElementsArray: any[] = [];
-  for (let setElement of setArr) {
-    if (!setElement) break;
-    if (!totalsLC.includes(setElement)) {
-      missingElementsArray.push(setElement);
-    }
-  }
-
-  if (!missingElementsArray.length) {
-    return (
-      <div>Din raportul MDM nu lipsesc elemente prezente in raportul SAP!</div>
-    );
-  }
-  return (
-    <div className="mt-4 ">
-      In raportul MDM lipsesc urmatoarele elemente din SAP:
-      <div className="grid mt-4 md:grid-cols-8  sm:grid-cols-6 xs:grid-cols-4 gap-2">
-        {missingElementsArray?.map((item: string) => (
-          <Badge
-            variant="secondary"
-            className="items-center justify-center flex pointer-events-none bg-yellow-200 text-yellow-800"
-          >
-            <p>{item}</p>
-          </Badge>
-        ))}
-      </div>
-      <Separator className="mt-4" />
     </div>
   );
 };

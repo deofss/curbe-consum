@@ -39,10 +39,12 @@ export const readExcel = async (file: any) => {
       const reports = useReports(parsedReportSheet);
       const totals = useTotals(parsedTotalSheet);
       const corrected = useCorrect(reports as any[], totals as any[]);
+
       res({
         reports: reports,
         reportSheet: reportSheet,
         correctedTotals: corrected,
+        rawTotals: totals,
         fileName: file.name,
       });
     };
