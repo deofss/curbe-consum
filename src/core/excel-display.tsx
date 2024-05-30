@@ -92,6 +92,8 @@ const ExcelDisplay = () => {
     setTotalsData([]);
     setUploadedDocumentNumber(0);
     dispatch(reset());
+    setIsError(false);
+    setIsSuccess(false);
   };
 
   const handleDownload = async () => {
