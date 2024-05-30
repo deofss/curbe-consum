@@ -15,8 +15,10 @@ export const correctionAlgorithm = (
   let countRemovedFromEnd = 0;
   let newValuesArray: any[] = [];
   let possitiveValuesCount = 0;
+  let foundNegativeValues = false;
 
-  // console.log(timestampsArray);
+  const windowSize = 1500; //varlori adiacente spike-ului pentru calcularea medianei - 100 = circa o zi
+  const percentageThreshold = 200; //% fata de mediana
 
   const minBillingPeriodWOT = moment(minBillingPeriod, "DD.MM.YYYY")
     .add(1, "days")
@@ -29,6 +31,9 @@ export const correctionAlgorithm = (
   const maxBillingDate = new Date(maxBillingPeriodWOT);
 
   for (let i = 0; i < valuesArray.length; i++) {
+    if (valuesArray[i] < 0) {
+      foundNegativeValues = true;
+    }
     let dayWOTime = moment(timestampsArray[i], "DD.MM.YYYY").format(
       "DD-MMMM-YYYY"
     );
@@ -82,9 +87,19 @@ export const correctionAlgorithm = (
     }
   }
 
+  if (foundNegativeValues) {
+    store.dispatch(
+      addSingleValue([codLC, fileName, "detectat_valori_negative"])
+    );
+  }
+
   const valueToCorrect =
     reportsTotal -
     newValuesArray.reduce((accumulator, curr) => accumulator + curr, 0);
+
+  if (detectSpikes(newValuesArray, windowSize, percentageThreshold)) {
+    store.dispatch(addSingleValue([codLC, fileName, "detectat_posibil_spike"]));
+  }
 
   if (Number(valueToCorrect) > 0) {
     const resultsArray = positiveCorrect(
@@ -92,7 +107,9 @@ export const correctionAlgorithm = (
       valueToCorrect,
       countRemoveFromStart,
       countRemovedFromEnd,
-      possitiveValuesCount
+      possitiveValuesCount,
+      codLC,
+      fileName
     );
 
     return {
@@ -107,7 +124,9 @@ export const correctionAlgorithm = (
       newValuesArray.reverse(),
       valueToCorrect,
       countRemoveFromStart,
-      countRemovedFromEnd
+      countRemovedFromEnd,
+      codLC,
+      fileName
     );
 
     return {
@@ -142,9 +161,12 @@ const positiveCorrect = (
   valueToCorrect: number,
   countRemoveFromStart: number,
   countRemovedFromEnd: number,
-  possitiveValuesCount: number
+  possitiveValuesCount: number,
+  codLC: any,
+  fileName: string
 ) => {
   let arr = array.map((item) => item);
+  let sumArr = arr.reduce((acc, curr) => acc + curr, 0);
   let remaining = valueToCorrect;
 
   if (possitiveValuesCount < 50) {
@@ -180,6 +202,17 @@ const positiveCorrect = (
   for (let j = 0; j < countRemovedFromEnd; j++) {
     arr.unshift(0);
   }
+
+  store.dispatch(
+    addSingleValue([
+      codLC,
+      fileName,
+      "corectat_pozitiv",
+      sumArr,
+      sumArr + valueToCorrect,
+      valueToCorrect,
+    ])
+  );
 
   // console.log(
   //   `SUM:${
@@ -228,16 +261,24 @@ const negativeCorrect = (
   array: number[],
   valueToCorrect: number,
   countRemoveFromStart: number,
-  countRemovedFromEnd: number
+  countRemovedFromEnd: number,
+  codLC: any,
+  fileName: string
 ) => {
   let arr = array.map((item) => item);
+
+  let sumArr = arr.reduce((acc, curr) => acc + curr, 0);
   let remaining = -valueToCorrect;
 
   while (remaining > 0) {
     for (let i = 0; i < arr.length; i++) {
       if (remaining > 0 && arr[i] > 0) {
-        arr[i] -= 1;
-        remaining--;
+        let randomNumber = Math.floor(Math.random() * 10);
+
+        if (randomNumber < 4) {
+          arr[i] -= 1;
+          remaining--;
+        }
         // console.log(
         //   `Subtracted: 1 from ${
         //     arr[i] + 1
@@ -255,6 +296,17 @@ const negativeCorrect = (
     arr.unshift(0);
   }
 
+  store.dispatch(
+    addSingleValue([
+      codLC,
+      fileName,
+      "corectat_negativ",
+      sumArr,
+      sumArr + valueToCorrect,
+      valueToCorrect,
+    ])
+  );
+
   // console.log(
   //   `SUM:${
   //     array.length + countRemoveFromStart + countRemovedFromEnd
@@ -270,3 +322,45 @@ const negativeCorrect = (
   // );
   return arr;
 };
+
+function detectSpikes(
+  data: number[],
+  windowSize: number,
+  percentageThreshold: number
+): boolean {
+  const spikes: number[] = [];
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i] >= 50) {
+      const start = Math.max(0, i - Math.floor(windowSize / 2));
+      const end = Math.min(data.length, i + Math.ceil(windowSize / 2));
+
+      const windowData = data.slice(start, end);
+
+      const median = calculateMedian(windowData);
+
+      const threshold = (percentageThreshold / 100) * median;
+
+      if (Math.abs(data[i] - median) > threshold) {
+        spikes.push(i);
+      }
+    }
+  }
+
+  if (spikes?.length > 0) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function calculateMedian(arr: number[]): number {
+  const sortedArr = [...arr].sort((a, b) => a - b);
+  const mid = Math.floor(sortedArr.length / 2);
+
+  if (sortedArr.length % 2 === 0) {
+    return (sortedArr[mid - 1] + sortedArr[mid]) / 2;
+  } else {
+    return sortedArr[mid];
+  }
+}

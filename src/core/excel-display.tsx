@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DirectoryInput from "./directory-input";
 import { readExcel } from "./readExcel";
 import {
@@ -11,6 +11,9 @@ import {
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DownloadDetailsButton from "./download-details-button";
+
+import { useAppDispatch } from "@/hooks/redux-hooks";
+import { reset } from "@/redux-features/sapToMDMSlice";
 
 import DisplayCard from "./display-card";
 
@@ -38,6 +41,8 @@ const ExcelDisplay = () => {
   const [isError, setIsError] = useState(false);
   const [uploadedDocumentNumber, setUploadedDocumentNumber] = useState(0);
   const { toast } = useToast();
+
+  const dispatch = useAppDispatch();
 
   const handleDirectorySelect = async (filesArray: any) => {
     setIsLoading(true);
@@ -86,6 +91,7 @@ const ExcelDisplay = () => {
     setReportData([]);
     setTotalsData([]);
     setUploadedDocumentNumber(0);
+    dispatch(reset());
   };
 
   const handleDownload = async () => {
@@ -114,8 +120,8 @@ const ExcelDisplay = () => {
           // console.log(totalDataFields);
         }
 
-        const totalsSheetData = totalDataFields.map(
-          (item: any, index: number) => (item ? item?.flat() : item)
+        const totalsSheetData = totalDataFields.map((item: any) =>
+          item ? item?.flat() : item
         );
 
         const maxLen = totalsSheetData.reduce(

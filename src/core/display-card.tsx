@@ -200,7 +200,7 @@ const DisplayCard = ({
                         }
                       )}
                     >
-                      <p className="text-[10px]">{`${actual} kWh`}</p>
+                      <p className="">{`${actual} kWh`}</p>
                     </Badge>
                   </TableCell>
                 </TableRow>

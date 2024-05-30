@@ -7,7 +7,16 @@ interface SapToMDMState {
 }
 
 const initialState: SapToMDMState = {
-  array: [["Loc consum", "Fisier", "Anomalie detectata"]],
+  array: [
+    [
+      "Loc consum",
+      "Fisier",
+      "Anomalie detectata",
+      "Val. MDM",
+      "Val. SAP",
+      "Corectat",
+    ],
+  ],
 };
 
 export const sapToMDMSlice = createSlice({
@@ -21,7 +30,16 @@ export const sapToMDMSlice = createSlice({
       state.array.push(action.payload);
     },
     reset: (state: any) => {
-      state = [["Loc consum", "Fisier", "Anomalie detectata"]];
+      state = [
+        [
+          "Loc consum",
+          "Fisier",
+          "Anomalie detectata",
+          "Val. MDM",
+          "Val. SAP",
+          "Corectat",
+        ],
+      ];
     },
   },
 });
