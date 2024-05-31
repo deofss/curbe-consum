@@ -25,20 +25,30 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
   const [item, setItem] = useState(data?.data?.slice(1));
 
   useEffect(() => {
-    if (!showDetails) {
-      startTransition(() =>
-        setItem(
-          data?.data
-            ?.slice(1)
-            .filter((itm: any[]) =>
-              itemsWithIssues?.includes(itm[2]?.toString())
-            )
-        )
+    if (filterValue) {
+      setItem(
+        data?.data
+          ?.slice(1)
+          .filter((itm: any[]) =>
+            itm[2]?.toString().includes(filterValue?.toString())
+          )
       );
     } else {
-      startTransition(() => setItem(data?.data?.slice(1)));
+      if (!showDetails) {
+        startTransition(() =>
+          setItem(
+            data?.data
+              ?.slice(1)
+              .filter((itm: any[]) =>
+                itemsWithIssues?.includes(itm[2]?.toString())
+              )
+          )
+        );
+      } else {
+        startTransition(() => setItem(data?.data?.slice(1)));
+      }
     }
-  }, [showDetail]);
+  }, [showDetails, filterValue]);
 
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -80,11 +90,11 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
           />
           <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
         </div>
-        {/* <Input
+        <Input
           onChange={(e) => setFilterValue(e.target.value)}
           placeholder="cod loc consum"
           className="my-1 w-[300px]"
-        /> */}
+        />
       </div>
       <TableVirtuoso
         style={{ height: 500 }}
