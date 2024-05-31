@@ -99,6 +99,11 @@ export const useCorrect = (
       0
     );
 
+    if (!foundMDMToSAP) {
+      store.dispatch(
+        addSingleValue([itemRes?.codLC, fileName, "lipsa_curba_sap"])
+      );
+    }
     return [
       "",
       itemRes?.denumireCompanie,
