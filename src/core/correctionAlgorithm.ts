@@ -43,15 +43,12 @@ export const correctionAlgorithm = (
     const currentDate = new Date(dayWOTime);
 
     if (
-      (i === 0 && currentDate > maxBillingDate) ||
-      (i === valuesArray?.length && currentDate < minBillingDate)
+      i === 0 &&
+      moment(currentDate)?.format("MM") !==
+        moment(maxBillingPeriod, "DD.MM.YYYY")?.add(1, "days")?.format("MM")
     ) {
       store.dispatch(
-        addSingleValue([
-          codLC,
-          fileName,
-          "detectat_facturat_perioadat_diferita",
-        ])
+        addSingleValue([codLC, fileName, "detectat_facturat_luna_precedenta"])
       );
 
       return {

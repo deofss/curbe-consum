@@ -71,7 +71,6 @@ const Chart = ({ chartData }: { chartData: { value: number }[] }) => {
           type="number"
           domain={["dataMin", "dataMax+10"]}
         />
-        <XAxis dataKey="date" hide />
         <Area
           type="monotone"
           isAnimationActive={false}

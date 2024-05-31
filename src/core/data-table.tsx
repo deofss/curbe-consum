@@ -65,6 +65,14 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
     return filteredArrayOfIssues;
   };
 
+  const getRawData = (codLC: string) => {
+    const rawData = data?.rawData?.find((dta: any) => dta?.codLC === codLC);
+
+    let rawDataWithValues = rawData?.values?.map((itm: any) => ({
+      value: itm,
+    }));
+    return rawDataWithValues;
+  };
   return (
     <>
       <div className="flex my-4 items-center space-x-2">
@@ -109,32 +117,20 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
         )}
         itemContent={(cellIndex, cell) => {
           // {item?.data.map((cell: any, cellIndex: number) => {
-          let timestampsArray = data?.data[0]?.[11];
           let actual = cell[cell.length - 1];
 
           let actualTotalsChartData: any;
 
           startTransition(
             () =>
-              (actualTotalsChartData = cell[11].map(
-                (itm: any, idx: number) => ({
-                  value: itm,
-                  date: timestampsArray[idx],
-                })
-              ))
+              (actualTotalsChartData = cell[11].map((itm: any) => ({
+                value: itm,
+              })))
           );
 
           let rawTotalsChartData: any;
 
-          startTransition(
-            () =>
-              (rawTotalsChartData = data?.rawData[cellIndex + 1]?.values?.map(
-                (itm: any, idx: number) => ({
-                  value: itm,
-                  date: timestampsArray[idx],
-                })
-              ))
-          );
+          startTransition(() => (rawTotalsChartData = getRawData(cell[2])));
 
           return (
             <>
