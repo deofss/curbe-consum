@@ -6,7 +6,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 
 import { useAppSelector } from "@/hooks/redux-hooks";
 
@@ -21,36 +20,23 @@ const Chart = lazy(() => import("./chart"));
 import { TableVirtuoso } from "react-virtuoso";
 export const DataTable = ({ data, index }: { data: any; index: number }) => {
   const [showDetails, setShowDetails] = useState<boolean>(false);
-  const [filterValue, setFilterValue] = useState("");
   const [item, setItem] = useState(data?.data?.slice(1));
 
   useEffect(() => {
-    if (filterValue) {
+    if (!showDetails) {
       startTransition(() =>
         setItem(
           data?.data
             ?.slice(1)
             .filter((itm: any[]) =>
-              itm[2]?.toString()?.includes(filterValue?.toString())
+              itemsWithIssues?.includes(itm[2]?.toString())
             )
         )
       );
     } else {
-      if (!showDetails) {
-        startTransition(() =>
-          setItem(
-            data?.data
-              ?.slice(1)
-              .filter((itm: any[]) =>
-                itemsWithIssues?.includes(itm[2]?.toString())
-              )
-          )
-        );
-      } else {
-        startTransition(() => setItem(data?.data?.slice(1)));
-      }
+      startTransition(() => setItem(data?.data?.slice(1)));
     }
-  }, [showDetails, filterValue]);
+  }, [showDetails]);
 
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -79,10 +65,6 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
     return filteredArrayOfIssues;
   };
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   return (
     <>
       <div>
@@ -96,13 +78,6 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
           />
           <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
         </div>
-        {mounted ? (
-          <Input
-            onChange={(e) => setFilterValue(e.target.value)}
-            placeholder="cod loc consum"
-            className="my-1 w-[300px]"
-          />
-        ) : null}
       </div>
       <TableVirtuoso
         style={{ height: 500 }}
