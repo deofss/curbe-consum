@@ -32,7 +32,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
         data?.data
           ?.slice(1)
           .filter((itm: any[]) =>
-            itm[2]?.toString().includes(filterValue?.toString())
+            itm[2]?.toString()?.includes(filterValue?.toString())
           )
       );
     } else {
@@ -81,8 +81,13 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
 
   return (
     <>
-      <div>
-        <div className="flex my-4 items-center space-x-2">
+      <div className="flex flex-row justify-between w-full mb-4 ">
+        <Input
+          placeholder="cod loc consum"
+          className="my-1 mb-2 w-[300px]"
+          onChange={(e) => setFilterValue(e?.target?.value)}
+        />
+        <div className="flex  items-center space-x-2">
           <Switch
             checked={showDetails}
             onCheckedChange={() =>
@@ -92,40 +97,48 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
           />
           <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
         </div>
-        <Input
-          placeholder="cod loc consum"
-          className="my-1 w-[300px]"
-          onChange={(e) => setFilterValue(e?.target?.value)}
-        />
       </div>
       <TableVirtuoso
-        style={{ height: 500 }}
+        style={{ height: 450 }}
         data={item}
+        className="w-full border-sm border-green-500"
         components={{
-          Table: (props) => <Table {...props} className="w-full" />,
-          TableHead: (props) => (
-            <TableHeader {...props} className="bg-background fixed top-0" />
-          ),
           TableRow: (props) => <TableRow {...props} />,
         }}
         context={{ isScrolling }}
         isScrolling={setIsScrolling}
         fixedHeaderContent={() => (
-          <TableRow>
-            <TableHead className="text-xs">Idx.</TableHead>
+          <TableRow className="backdrop-blur-xl bg-secondary/80 pointer-events-none ">
+            <TableHead className="text-xs text-primary  w-[70px]">
+              Idx.
+            </TableHead>
 
-            <TableHead className="text-xs">COD LC</TableHead>
-            <TableHead className="text-xs">Denumire</TableHead>
+            <TableHead className="text-xs text-primary w-[150px]">
+              COD LC
+            </TableHead>
+            <TableHead className="text-xs text-primary w-[150px]  ">
+              Denumire
+            </TableHead>
 
-            <TableHead className="text-xs">Grafic δ0</TableHead>
+            <TableHead className="text-xs text-primary w-[300px] ">
+              Grafic δ0
+            </TableHead>
 
-            <TableHead className="text-xs">Grafic δ1</TableHead>
+            <TableHead className="text-xs text-primary  w-[300px] ">
+              Grafic δ1
+            </TableHead>
 
-            <TableHead className="text-xs">{`Val. SAP`}</TableHead>
-            <TableHead className="text-xs">Val. Corr</TableHead>
+            <TableHead className="text-xs text-primary  w-[80px]">{`Val. SAP`}</TableHead>
+            <TableHead className="text-xs text-primary   w-[80px]">
+              Val. Corr
+            </TableHead>
 
-            <TableHead className="text-xs">Actual kWh</TableHead>
-            <TableHead className="text-xs">Anomalii</TableHead>
+            <TableHead className="text-xs text-primary  w-[120px]">
+              Actual kWh
+            </TableHead>
+            <TableHead className="text-xs text-primary  w-[200px]">
+              Anomalii
+            </TableHead>
           </TableRow>
         )}
         itemContent={(cellIndex, cell) => {
@@ -154,17 +167,17 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
 
           return (
             <>
-              <TableCell className="text-xs w-[50px] sticky left-0 ">
+              <TableCell className="text-xs  sticky left-0 ">
                 {cellIndex + 1}
               </TableCell>
-              <TableCell className="text-xs w-[150px] sticky left-0 ">
+              <TableCell className="text-xs sticky left-0 ">
                 {cell[2]}
               </TableCell>
-              <TableCell className="text-xs w-[150px] ">{cell[1]}</TableCell>
+              <TableCell className="text-xs w-[150px]  ">{cell[1]}</TableCell>
               <React.Suspense
                 fallback={<LoaderCircle className="animate-spin" size={16} />}
               >
-                <TableCell className="h-full w-[300px] p-1">
+                <TableCell className="h-full p-1">
                   <React.Suspense
                     fallback={
                       <LoaderCircle className="animate-spin" size={16} />
@@ -183,7 +196,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
                   </React.Suspense>
                 </TableCell>
 
-                <TableCell className="h-full w-[300px] p-1">
+                <TableCell className="h-full  p-1">
                   <React.Suspense
                     fallback={
                       <LoaderCircle className="animate-spin" size={16} />
@@ -216,11 +229,11 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
                 </Badge>
               </TableCell> */}
 
-              <TableCell className="text-xs w-[50px]">{`${cell[5]} kWh`}</TableCell>
-              <TableCell className="text-xs w-[50px]">
+              <TableCell className="text-xs ">{`${cell[5]} kWh`}</TableCell>
+              <TableCell className="text-xs">
                 {cell[8] ? `${cell[8]} kWh` : "-"}
               </TableCell>
-              <TableCell className="w-[120px]   ">
+              <TableCell className="">
                 <Badge
                   className={clsx(
                     {
@@ -236,10 +249,12 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
                   {`${actual} kWh`}
                 </Badge>
               </TableCell>
-              <TableCell className="w-[250px] ">
+              <TableCell className="">
                 <div className=" flex flex-col gap-1 w-full">
                   {getIssues(cell[2])?.map((itm) => (
-                    <Badge className="pointer-events-none ">{itm[2]}</Badge>
+                    <Badge className="pointer-events-none w-full">
+                      {itm[2]}
+                    </Badge>
                   ))}
                 </div>
               </TableCell>

@@ -48,12 +48,12 @@ const MissingComponent = ({ item }: { item: any }) => {
   return (
     <div className="mt-4 ">
       In raportul MDM lipsesc urmatoarele elemente din SAP:
-      <ScrollArea className="h-[100px]">
-        <div className="grid mt-4 md:grid-cols-8  sm:grid-cols-6 xs:grid-cols-4 gap-2">
+      <ScrollArea className="h-[80px]">
+        <div className="grid mt-4 md:grid-cols-10  sm:grid-cols-8 xs:grid-cols-6 gap-2">
           {uniqueMissingElementsArray?.map((item: string) => (
             <Badge
               variant="secondary"
-              className="items-center justify-center flex pointer-events-none bg-yellow-200 text-yellow-800"
+              className="items-center border-none justify-center flex pointer-events-none "
               key={item}
             >
               {item}
@@ -61,7 +61,7 @@ const MissingComponent = ({ item }: { item: any }) => {
           ))}
         </div>
       </ScrollArea>
-      <Separator className="mt-4" />
+      <Separator className="mt-2" />
     </div>
   );
 };
