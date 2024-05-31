@@ -56,7 +56,7 @@ export const correctionAlgorithm = (
         dateDiscrepancy:
           countRemoveFromStart || countRemovedFromEnd ? true : false,
         valueCorrected: 0,
-        resultsArray: newValuesArray,
+        resultsArray: valuesArray,
       };
     }
 
@@ -70,7 +70,7 @@ export const correctionAlgorithm = (
         dateDiscrepancy:
           countRemoveFromStart || countRemovedFromEnd ? true : false,
         valueCorrected: 0,
-        resultsArray: newValuesArray,
+        resultsArray: valuesArray,
       };
     }
     if (currentDate >= minBillingDate && currentDate <= maxBillingDate) {
