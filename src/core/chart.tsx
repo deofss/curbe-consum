@@ -70,7 +70,6 @@ const Chart = ({ chartData }: { chartData: { value: number }[] }) => {
           axisLine={false}
           type="number"
           domain={["dataMin", "dataMax+10"]}
-          width={30}
         />
         <Area
           type="monotone"

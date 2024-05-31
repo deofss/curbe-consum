@@ -177,7 +177,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
               <React.Suspense
                 fallback={<LoaderCircle className="animate-spin" size={16} />}
               >
-                <TableCell className="h-full p-1">
+                <TableCell className="h-full p-1 overflow-visible">
                   <React.Suspense
                     fallback={
                       <LoaderCircle className="animate-spin" size={16} />
@@ -196,7 +196,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
                   </React.Suspense>
                 </TableCell>
 
-                <TableCell className="h-full  p-1">
+                <TableCell className="h-full overflow-visible p-1">
                   <React.Suspense
                     fallback={
                       <LoaderCircle className="animate-spin" size={16} />
