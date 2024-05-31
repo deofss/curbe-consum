@@ -13,7 +13,7 @@ import { useAppSelector } from "@/hooks/redux-hooks";
 import clsx from "clsx";
 
 import { Badge } from "@/components/ui/badge";
-import { CircleCheck, CircleX, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 const Chart = lazy(() => import("./chart"));
