@@ -15,28 +15,42 @@ import { Badge } from "@/components/ui/badge";
 import { LoaderCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-const Chart = lazy(() => import("./chart"));
+
+import Chart from "./chart";
+
+import { Input } from "@/components/ui/input";
 
 import { TableVirtuoso } from "react-virtuoso";
 export const DataTable = ({ data, index }: { data: any; index: number }) => {
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [item, setItem] = useState(data?.data?.slice(1));
+  const [filterValue, setFilterValue] = useState("");
 
   useEffect(() => {
-    if (!showDetails) {
-      startTransition(() =>
-        setItem(
-          data?.data
-            ?.slice(1)
-            .filter((itm: any[]) =>
-              itemsWithIssues?.includes(itm[2]?.toString())
-            )
-        )
+    if (filterValue) {
+      setItem(
+        data?.data
+          ?.slice(1)
+          .filter((itm: any[]) =>
+            itm[2]?.toString().includes(filterValue?.toString())
+          )
       );
     } else {
-      startTransition(() => setItem(data?.data?.slice(1)));
+      if (!showDetails) {
+        startTransition(() =>
+          setItem(
+            data?.data
+              ?.slice(1)
+              .filter((itm: any[]) =>
+                itemsWithIssues?.includes(itm[2]?.toString())
+              )
+          )
+        );
+      } else {
+        startTransition(() => setItem(data?.data?.slice(1)));
+      }
     }
-  }, [showDetails]);
+  }, [showDetails, filterValue]);
 
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -78,6 +92,11 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
           />
           <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
         </div>
+        <Input
+          placeholder="cod loc consum"
+          className="my-1 w-[300px]"
+          onChange={(e) => setFilterValue(e?.target?.value)}
+        />
       </div>
       <TableVirtuoso
         style={{ height: 500 }}
