@@ -6,6 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
 
 import { useAppSelector } from "@/hooks/redux-hooks";
 
@@ -20,6 +21,7 @@ const Chart = lazy(() => import("./chart"));
 import { TableVirtuoso } from "react-virtuoso";
 export const DataTable = ({ data, index }: { data: any; index: number }) => {
   const [showDetails, setShowDetails] = useState<boolean>(false);
+  const [filterValue, setFilterValue] = useState("");
   const [item, setItem] = useState(data?.data?.slice(1));
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
     } else {
       startTransition(() => setItem(data?.data?.slice(1)));
     }
-  }, [showDetails]);
+  }, [showDetail]);
 
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -65,25 +67,24 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
     return filteredArrayOfIssues;
   };
 
-  const getRawData = (codLC: string) => {
-    const rawData = data?.rawData?.find((dta: any) => dta?.codLC === codLC);
-
-    let rawDataWithValues = rawData?.values?.map((itm: any) => ({
-      value: itm,
-    }));
-    return rawDataWithValues;
-  };
   return (
     <>
-      <div className="flex my-4 items-center space-x-2">
-        <Switch
-          checked={showDetails}
-          onCheckedChange={() =>
-            startTransition(() => setShowDetails((prev: any) => !prev))
-          }
-          id={`${index}${item.fileName}`}
-        />
-        <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
+      <div>
+        <div className="flex my-4 items-center space-x-2">
+          <Switch
+            checked={showDetails}
+            onCheckedChange={() =>
+              startTransition(() => setShowDetails((prev: any) => !prev))
+            }
+            id={`${index}${item.fileName}`}
+          />
+          <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
+        </div>
+        {/* <Input
+          onChange={(e) => setFilterValue(e.target.value)}
+          placeholder="cod loc consum"
+          className="my-1 w-[300px]"
+        /> */}
       </div>
       <TableVirtuoso
         style={{ height: 500 }}
@@ -130,7 +131,14 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
 
           let rawTotalsChartData: any;
 
-          startTransition(() => (rawTotalsChartData = getRawData(cell[2])));
+          startTransition(
+            () =>
+              (rawTotalsChartData = data?.rawData
+                ?.find((dta: any) => dta?.codLC === cell[2])
+                ?.values?.map((itm: any) => ({
+                  value: itm,
+                })))
+          );
 
           return (
             <>

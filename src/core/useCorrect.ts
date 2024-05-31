@@ -98,6 +98,7 @@ export const useCorrect = (
       (acc: number, curr: number) => acc + curr,
       0
     );
+
     return [
       "",
       itemRes?.denumireCompanie,

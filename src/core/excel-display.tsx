@@ -159,7 +159,7 @@ const ExcelDisplay = () => {
   };
 
   return (
-    <div className="w-full h-full mt-[70px] ml-10 mr-10 flex flex-col items-center ">
+    <div className="w-full h-full mt-[70px] mb-[100px] ml-10 mr-10 flex flex-col items-center ">
       <Card className="w-full max-w-[1500px] mx-10 h-fit">
         <CardHeader>
           <CardTitle>Incarca dosar cu documente</CardTitle>

@@ -28,7 +28,7 @@ const DisplayCard = ({
   index: number;
 }) => {
   return (
-    <Card className="mt-4">
+    <Card className="mt-4 ">
       <CardHeader>
         <CardTitle>{`Extras din fisier: ${item.fileName}`}</CardTitle>
         <CardDescription>
