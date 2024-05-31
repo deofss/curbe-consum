@@ -42,6 +42,40 @@ export const correctionAlgorithm = (
     );
     const currentDate = new Date(dayWOTime);
 
+    if (
+      (i === 0 && currentDate > maxBillingDate) ||
+      (i === valuesArray?.length && currentDate < minBillingDate)
+    ) {
+      store.dispatch(
+        addSingleValue([
+          codLC,
+          fileName,
+          "detectat_facturat_perioadat_diferita",
+        ])
+      );
+
+      return {
+        foundMDMToSAP: true,
+        dateDiscrepancy:
+          countRemoveFromStart || countRemovedFromEnd ? true : false,
+        valueCorrected: 0,
+        resultsArray: newValuesArray,
+      };
+    }
+
+    if (Number(reportsTotal) < 0) {
+      store.dispatch(
+        addSingleValue([codLC, fileName, "detectat_total_raport_sap_negativ"])
+      );
+
+      return {
+        foundMDMToSAP: true,
+        dateDiscrepancy:
+          countRemoveFromStart || countRemovedFromEnd ? true : false,
+        valueCorrected: 0,
+        resultsArray: newValuesArray,
+      };
+    }
     if (currentDate >= minBillingDate && currentDate <= maxBillingDate) {
       if (currentDate.getTime() === minBillingDate.getTime()) {
         if (currentTime === "00:00") {

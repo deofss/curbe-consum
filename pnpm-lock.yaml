@@ -92,6 +92,12 @@ dependencies:
   '@reduxjs/toolkit':
     specifier: ^2.2.5
     version: 2.2.5(react-redux@9.1.2)(react@18.3.1)
+  '@tanstack/react-table':
+    specifier: ^8.17.3
+    version: 8.17.3(react-dom@18.3.1)(react@18.3.1)
+  '@tanstack/react-virtual':
+    specifier: ^3.5.0
+    version: 3.5.0(react-dom@18.3.1)(react@18.3.1)
   '@types/node':
     specifier: ^20.12.12
     version: 20.12.12
@@ -113,6 +119,9 @@ dependencies:
   cmdk:
     specifier: ^1.0.0
     version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.2)(react-dom@18.3.1)(react@18.3.1)
+  d3-shape:
+    specifier: ^3.2.0
+    version: 3.2.0
   date-fns:
     specifier: ^3.6.0
     version: 3.6.0
@@ -140,6 +149,9 @@ dependencies:
   next-themes:
     specifier: ^0.3.0
     version: 0.3.0(react-dom@18.3.1)(react@18.3.1)
+  overlayscrollbars-react:
+    specifier: ^0.5.6
+    version: 0.5.6(overlayscrollbars@2.8.3)(react@18.3.1)
   postcss:
     specifier: ^8.4.38
     version: 8.4.38
@@ -164,12 +176,18 @@ dependencies:
   react-resizable-panels:
     specifier: ^2.0.19
     version: 2.0.19(react-dom@18.3.1)(react@18.3.1)
+  react-virtuoso:
+    specifier: ^4.7.11
+    version: 4.7.11(react-dom@18.3.1)(react@18.3.1)
   recharts:
     specifier: ^2.12.7
     version: 2.12.7(react-dom@18.3.1)(react@18.3.1)
   sonner:
     specifier: ^1.4.41
     version: 1.4.41(react-dom@18.3.1)(react@18.3.1)
+  table:
+    specifier: github:tanstack/react-table
+    version: github.com/tanstack/react-table/a4bd09a002949185bd4cca7cd2085faeaf87b682
   tailwind-merge:
     specifier: ^2.3.0
     version: 2.3.0
@@ -2217,6 +2235,38 @@ packages:
     dev: true
     optional: true
 
+  /@tanstack/react-table@8.17.3(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-5gwg5SvPD3lNAXPuJJz1fOCEZYk9/GeBFH3w/hCgnfyszOIzwkwgp5I7Q4MJtn0WECp84b5STQUDdmvGi8m3nA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      '@tanstack/table-core': 8.17.3
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@tanstack/react-virtual@3.5.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-rtvo7KwuIvqK9zb0VZ5IL7fiJAEnG+0EiFZz8FUOs+2mhGqdGmjKIaT1XU7Zq0eFqL0jonLlhbayJI/J2SA/Bw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/virtual-core': 3.5.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /@tanstack/table-core@8.17.3:
+    resolution: {integrity: sha512-mPBodDGVL+fl6d90wUREepHa/7lhsghg2A3vFpakEhrhtbIlgNAZiMr7ccTgak5qbHqF14Fwy+W1yFWQt+WmYQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /@tanstack/virtual-core@3.5.0:
+    resolution: {integrity: sha512-KnPRCkQTyqhanNC0K63GBG3wA8I+D1fQuVnAvcBF8f13akOKeQp1gSbu6f77zCxhEk727iV5oQnbHLYzHrECLg==}
+    dev: false
+
   /@types/babel__core@7.20.5:
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
     dependencies:
@@ -3981,6 +4031,20 @@ packages:
       word-wrap: 1.2.5
     dev: true
 
+  /overlayscrollbars-react@0.5.6(overlayscrollbars@2.8.3)(react@18.3.1):
+    resolution: {integrity: sha512-E5To04bL5brn9GVCZ36SnfGanxa2I2MDkWoa4Cjo5wol7l+diAgi4DBc983V7l2nOk/OLJ6Feg4kySspQEGDBw==}
+    peerDependencies:
+      overlayscrollbars: ^2.0.0
+      react: '>=16.8.0'
+    dependencies:
+      overlayscrollbars: 2.8.3
+      react: 18.3.1
+    dev: false
+
+  /overlayscrollbars@2.8.3:
+    resolution: {integrity: sha512-7JHA1oWm3Gru3RF5wwaeBdgk4keGtc56HMWEQRQi/RdLdY3pZTUDlSfUk1jyv1yQN12otr828n52rT6VNzYO4w==}
+    dev: false
+
   /p-limit@3.1.0:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
@@ -4313,6 +4377,17 @@ packages:
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
+
+  /react-virtuoso@4.7.11(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-Kdn9qEtQI2ulEuBMzW2BTkDsfijB05QUd6lpZ1K36oyA3k65Cz4lG4EKrh2pCfUafX4C2uMSZOwzMOhbrMOTFA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16 || >=17 || >= 18'
+      react-dom: '>=16 || >=17 || >= 18'
+    dependencies:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     dev: false
@@ -5006,4 +5081,11 @@ packages:
 
   /zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+    dev: false
+
+  github.com/tanstack/react-table/a4bd09a002949185bd4cca7cd2085faeaf87b682:
+    resolution: {tarball: https://codeload.github.com/tanstack/react-table/tar.gz/a4bd09a002949185bd4cca7cd2085faeaf87b682}
+    name: table
+    version: 0.0.0
+    requiresBuild: true
     dev: false
