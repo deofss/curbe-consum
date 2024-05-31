@@ -26,12 +26,14 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
 
   useEffect(() => {
     if (filterValue) {
-      setItem(
-        data?.data
-          ?.slice(1)
-          .filter((itm: any[]) =>
-            itm[2]?.toString().includes(filterValue?.toString())
-          )
+      startTransition(() =>
+        setItem(
+          data?.data
+            ?.slice(1)
+            .filter((itm: any[]) =>
+              itm[2]?.toString()?.includes(filterValue?.toString())
+            )
+        )
       );
     } else {
       if (!showDetails) {
@@ -77,6 +79,10 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
     return filteredArrayOfIssues;
   };
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   return (
     <>
       <div>
@@ -90,11 +96,13 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
           />
           <Label htmlFor={`${index}${item.fileName}`}>Afiseaza tot</Label>
         </div>
-        <Input
-          onChange={(e) => setFilterValue(e.target.value)}
-          placeholder="cod loc consum"
-          className="my-1 w-[300px]"
-        />
+        {mounted ? (
+          <Input
+            onChange={(e) => setFilterValue(e.target.value)}
+            placeholder="cod loc consum"
+            className="my-1 w-[300px]"
+          />
+        ) : null}
       </div>
       <TableVirtuoso
         style={{ height: 500 }}
