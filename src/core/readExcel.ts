@@ -2,12 +2,13 @@ import * as XLSX from "xlsx";
 import { useReports } from "./useReports";
 import { useTotals } from "./useTotals";
 import { useCorrect } from "./useCorrect";
+import {runCheckIndexMismatch} from './runCheckIndexMismatch'
 
 export const readExcel = async (file: any) => {
   return new Promise((res, rej) => {
     const reader = new FileReader();
 
-    reader.onload = (e: any) => {
+    reader.onload =async (e: any) => {
       if (!e.target.result) return;
       const data = e.target.result;
       const sheetNames = XLSX.readFile(data).SheetNames;
@@ -37,6 +38,7 @@ export const readExcel = async (file: any) => {
       parsedTotalSheet?.splice(0, 1);
 
       const reports = useReports(parsedReportSheet);
+      runCheckIndexMismatch(reports,file.name)
       const totals = useTotals(parsedTotalSheet);
       const corrected = useCorrect(
         reports as any[],

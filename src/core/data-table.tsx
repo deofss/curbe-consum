@@ -252,7 +252,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
               <TableCell className="">
                 <div className=" flex flex-col gap-1 w-full">
                   {getIssues(cell[2])?.map((itm) => (
-                    <Badge className="pointer-events-none w-full">
+                    <Badge className={clsx("pointer-events-none w-full",{"bg-red-500":itm[2] === "detectat_inconsistenta_index"})}>
                       {itm[2]}
                     </Badge>
                   ))}
