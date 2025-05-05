@@ -225,7 +225,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
 
               <TableCell className="text-xs ">{`${cell[5]} kWh`}</TableCell>
               <TableCell className="text-xs">
-                {cell[8] ? `${cell[8]} kWh` : "-"}
+                {cell[8] ? `${Number(cell[8]).toFixed(3)} kWh` : "-"}
               </TableCell>
               <TableCell className="">
                 <Badge
@@ -236,11 +236,11 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
                     },
                     {
                       "bg-green-300 text-green-800  text-xs  w-full pointer-events-none":
-                        actual - cell[5] < 0.001,
+                        Number(Number(actual - cell[5]).toFixed(3)) === 0,
                     }
                   )}
                 >
-                  {`${actual} kWh`}
+                  {`${Number(actual).toFixed(3)} kWh`}
                 </Badge>
               </TableCell>
               <TableCell className="">
