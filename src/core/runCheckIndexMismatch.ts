@@ -22,13 +22,15 @@ const chechIndexMismatch = (
     (item) => item?.loc_de_consum === consumptionPlace
   );
   const eaArray = filteredArray?.filter(
-    (item) => item?.cadran_registru === "EA"
+    (item) => item?.cadran_registru === "EAP" || item?.cadran_registru === "EA"
   );
   const totalArray = filteredArray?.filter((item) => item?.isTotal === true);
   const total = totalArray?.reduce(
     (accum, current) => accum + current?.total_cantitate_energie_activa,
     0
   );
+
+  // console.log(eaArray);
   let totalIndex = 0;
   for (let singleLine of eaArray) {
     const indexVechi = singleLine?.index_vechi;

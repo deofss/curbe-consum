@@ -34,10 +34,17 @@ export const correctionAlgorithm = (
     if (valuesArray[i] < 0) {
       foundNegativeValues = true;
     }
-    let dayWOTime = moment(timestampsArray[i], "DD.MM.YYYY").format(
+
+    // let dayWOTime = moment("1899-12-30")
+    //   .add(timestampsArray[i], "days")
+    //   .format("DD-MMMM-YYYY");
+    // let currentTime = moment("1899-12-30")
+    //   .add(timestampsArray[i], "days")
+    //   .format("HH:mm");
+    let dayWOTime = moment(timestampsArray[i], "DD.MM.YYYY HH:mm:ss").format(
       "DD-MMMM-YYYY"
     );
-    let currentTime = moment(timestampsArray[i], "DD.MM.YYYY hh:mm").format(
+    let currentTime = moment(timestampsArray[i], "DD.MM.YYYY HH:mm:ss").format(
       "HH:mm"
     );
     const currentDate = new Date(dayWOTime);
@@ -73,6 +80,7 @@ export const correctionAlgorithm = (
         resultsArray: valuesArray,
       };
     }
+
     if (currentDate >= minBillingDate && currentDate <= maxBillingDate) {
       if (currentDate.getTime() === minBillingDate.getTime()) {
         if (currentTime === "00:00") {

@@ -20,6 +20,8 @@ export const readExcel = async (file: any) => {
         cellDates: true,
       }).Sheets[sheetNames[0]];
 
+      // console.log(reportSheet);
+
       const totalSheet = XLSX.read(data, {
         type: "binary",
         WTF: true,

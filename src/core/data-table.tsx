@@ -236,7 +236,7 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
                     },
                     {
                       "bg-green-300 text-green-800  text-xs  w-full pointer-events-none":
-                        actual - cell[5] === 0,
+                        actual - cell[5] < 0.001,
                     }
                   )}
                 >
