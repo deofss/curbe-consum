@@ -204,8 +204,14 @@ const positiveCorrect = (
     while (remaining > 0) {
       for (let i = 0; i < arr.length; i++) {
         if (remaining > 0) {
-          arr[i] += 1;
-          remaining--;
+          if (remaining < 0.1) {
+            arr[i] += remaining;
+            remaining = remaining - remaining;
+          } else {
+            arr[i] += 0.1;
+            remaining = remaining - 0.1;
+          }
+
           // console.log(
           //   `Added: 1 to ${arr[i] - 1}, remaining to be added ${remaining}`
           // );
@@ -216,8 +222,14 @@ const positiveCorrect = (
     while (remaining > 0) {
       for (let i = 0; i < arr.length; i++) {
         if (remaining > 0 && arr[i] > 0) {
-          arr[i] += 1;
-          remaining--;
+          if (remaining < 0.1) {
+            arr[i] += remaining;
+            remaining = remaining - remaining;
+          } else {
+            arr[i] += 0.1;
+            remaining = remaining - 0.1;
+          }
+
           // console.log(
           //   `Added: 1 to ${arr[i] - 1}, remaining to be added ${remaining}`
           // );
@@ -307,8 +319,13 @@ const negativeCorrect = (
         let randomNumber = Math.floor(Math.random() * 10);
 
         if (randomNumber < 4) {
-          arr[i] -= 1;
-          remaining--;
+          if (remaining < 0.1) {
+            arr[i] -= remaining;
+            remaining = remaining - remaining;
+          } else {
+            arr[i] -= 0.1;
+            remaining = remaining - 0.1;
+          }
         }
         // console.log(
         //   `Subtracted: 1 from ${

@@ -1,11 +1,5 @@
 import React, { lazy, startTransition, useEffect, useState } from "react";
-import {
-  Table,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { TableCell, TableHead, TableRow } from "@/components/ui/table";
 
 import { useAppSelector } from "@/hooks/redux-hooks";
 
@@ -252,7 +246,11 @@ export const DataTable = ({ data, index }: { data: any; index: number }) => {
               <TableCell className="">
                 <div className=" flex flex-col gap-1 w-full">
                   {getIssues(cell[2])?.map((itm) => (
-                    <Badge className={clsx("pointer-events-none w-full",{"bg-red-500":itm[2] === "detectat_inconsistenta_index"})}>
+                    <Badge
+                      className={clsx("pointer-events-none w-full", {
+                        "bg-red-500": itm[2] === "detectat_inconsistenta_index",
+                      })}
+                    >
                       {itm[2]}
                     </Badge>
                   ))}
